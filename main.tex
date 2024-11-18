@@ -1,0 +1,48 @@
+\documentclass{ULBreport}
+
+\sceau{Pictures/official_logos/sceauULB.png}
+
+\addbibresource{biblio.bib}
+
+\input{common/packages}
+
+\makeglossaries
+
+% \newglossaryentry{strip mining}
+% {
+%   name=strip mining,
+%   description={is the practice of mining a seam of mineral, by first removing a long strip of overlying soil and rock}
+% }
+
+
+
+% \newacronym{t}{t}{tons}
+
+
+
+\begin{document}
+
+\titleULB{
+	title={Two bars and one elastic},
+	course={Control System Design},
+	author={Emmeran COLOT},
+	date={2024},
+	teacher={Prof. Emanuele Garone},
+	logo={Pictures/official_logos/logos.jpg}
+}
+
+\listoftables % ToC for tables
+
+\listoffigures % ToC for figures
+
+\input{content/chapters.tex}
+
+\printglossary
+
+\printglossary[type=\acronymtype]
+
+%Bibliography
+\nocite{*}
+\printbibliography[type=article,title=Articles]
+
+\end{document}
