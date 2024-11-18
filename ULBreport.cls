@@ -188,7 +188,7 @@
 \newcommand{\sceau}[1]{\backgroundsetup{
 scale=1,
 color=black,
-opacity=0.15,
+opacity=0.25,
 angle=10,
 position={12cm,-22cm},
 contents={%
