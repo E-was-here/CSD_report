@@ -1,4 +1,89 @@
 \setcounter{secnumdepth}{2}
 
-\chapter{Chapter 1}
+\chapter{System identification}
+
+Based on the mechanical equations of the DC motor, the form of the expected transfer function was already known:
+
+\begin{equation}
+    G(s) = \frac{A_0}{\tau s + 1}
+    \label{1_st_order_TF}
+\end{equation}
+
+Because it has no pole in $0$ (or equivalently it is a non-integrator system), the response of the system to a step
+command is enough to find bth $A_0$ and $\tau$.\\
+
+In the following section, the identification of motor 1 will be explained in detail. The same method has also been 
+done with motor 2 to find its own transfer function.
+
+\section{Step response}
+
+The starting point of the step response experiment is the static characteristic of the motor:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=\textheight/4]{Pictures/static_characteristic_motor_1.png}
+    \caption{Static characteristic of the system driven by the motor 1}
+    \label{static_characteristic_motor_1}
+\end{figure}
+
+By analyzing figure \ref{static_characteristic_motor_1}, a first obvious deduction to be made is that the velocity
+cannot reach a value greater than approximately $6.5 V$\footnote{Any speed will be expressed in volts ($V$) as speed is
+measured by a sensor that returns a voltage} (and $-6.5 V$ is minimum value). This clarifies the use of "\textit{
+feasible}" in the requirements as a speed of $7 V$ could never been achieved, no matter what the input is.\\
+
+What is really interesting to understand is that the static characteristic gives the speed of the shaft after a
+sufficient amount of time (in theory, after an infinite amount of time bt in practice, once the transient response 
+vanishes). By looking at it, it is clear that to have a speed that is different from $0 V$ and that is outside of the
+saturated region, a high command should be send to reach saturation and it must then be lowered to a point where the
+speed is no longer saturating (a command between $1.1 V$ and $1.3 V$ approximately).\\
+
+With this in mind, the following step response has been recorded:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=\textheight/3]{Pictures/step_response_positive_motor_1.png}
+    \caption{Step response of the system when the motor 1 has a step as command}
+    \label{step_response_positive_motor_1}
+\end{figure}
+
+Where the command is first set at a high enough voltage ($\geq 1.5 V$, based on \ref{static_characteristic_motor_1}). 
+After the velocity saturates, it lowers to a value where the velocity will stabilize. This operating point 
+\textit{$OP_{1+}$} will correspond to the transfer function $G(s)$ that we are trying to estimate here.
+
+\begin{equation}
+    OP_{1+} = \begin{bmatrix}
+        \text{command} = 1.13 V \\
+        \text{velocity} = 2.15 V
+    \end{bmatrix}
+\end{equation}
+
+With an coordinates change for easier visualization, the data plot \ref{estimated_step_response_positive_motor_1} is 
+used for the determination of $A_0$ and $\tau$. It is indeed known that for a transfer function in the form of 
+\ref{1_st_order_TF}, the parameter $A_0$ is equal to the asymptotic value of the step response divided by the height of
+the step. $\tau$ on the other hand is equal to the time after which the step response reaches $1/e$ ($\approx 0.63$)
+times the asymptotic step response. This gives as transfer function:
+
+\begin{equation}
+    G_{1+} = \frac{24.88}{19.15s + 1}
+    \label{TF_mot1_+}
+\end{equation}
+
+The name $G_{1+}$ has been chosen because the "\textit{$1$}" indicates that it corresponds to the motor 1 and the 
+"\textit{$+$}" indicates that it is used for a positive speed. As shown on the static characteristic 
+\ref{static_characteristic_motor_1}, the operating point at which the system will be operating to have a negative speed 
+($OP_{1-}$) is quite far from $OP_{1+}$, which means that another model will be needed to describe the behavior of the 
+system in this zone (see discussion in section \ref{section_validation}).\\
+
+With the model \ref{TF_mot1_+}, the simulated step response can be computed and as shown in figure 
+\ref{estimated_step_response_positive_motor_1} it can be seen that it matches quite well with the experimental results.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=\textheight/3]{Pictures/first_order_model_positive_motor_1.png}
+    \caption{Estimation of the step response compared to the real one}
+    \label{estimated_step_response_positive_motor_1}
+\end{figure}
+
+\section{validation}
+\label{section_validation}
 
