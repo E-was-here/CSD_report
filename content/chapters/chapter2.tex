@@ -1,0 +1,98 @@
+\setcounter{secnumdepth}{2}
+
+\chapter{Design of the controller}
+
+\section{Requirements analysis}
+
+The first step of the controller design is to analyse the requirements that have been given in the introduction:
+
+\begin{enumerate}
+    \item[$\bullet$] the shaft can reach any reasonnable speed in less than half a second
+    \item[$\bullet$] the shaft's speed in maintained as smooth as possible
+    \item[$\bullet$] the system can reject a step disturbance as fast as possible
+    \item[$\bullet$] the shaft's speed can follow a feasible speed reference of $4 Hz$ from any feasible speed
+\end{enumerate}
+
+There is one reference tracking objective, one disturbance rejection objective and two dynamical response properties.
+The design of the controller will follow the following path:
+
+\begin{enumerate}
+    \item Rejecting a step disturbance (with each motor separately)
+    \item Following a $4 Hz$ reference (with each motor separately)
+    \item Merge the two controllers into a single digital one
+    \item Reach any speed in $< 0.5 s$
+\end{enumerate}
+
+The method used here is to design the controller in there Laplace domain in the first time. Once the continuous time
+controller has the desired behaviour, it is discretized using the Tustin method (and without forgetting to take the
+ZOH into account).
+
+\section{Disturbance rejection}
+
+From theory, it is known that a controller is able to asymptotically reject a disturbance if it has at the denominator
+of its transfer function the denominator of the disturbance.\\
+
+As a step disturbance is of the form:
+
+\begin{equation}
+    D(s) = \frac{A e^{-\tau s}}{s}
+\end{equation}
+
+The controller will need a pole in $0$. This can be easily done by using a PI controller, which looks like:
+
+\begin{align}
+    C_{PI}(s) &= k_p \left( 1 + \frac{1}{T_i s} \right)\\
+    &= k_p \left(\frac{T_i s + 1}{T_i s} \right)
+    \label{eq:general_PI}
+\end{align}
+
+The $k_p$ will be chosen once the dynamic response characteristics will have to be met. However, $T_i$ can already be 
+chosen based on a simple criteria. As the open-loop transfer function equals the product $C_{PI}(s) \times G_{1+} (s)$, a
+solid choice is to use $T_i$ to cancel the pole in the system. This way, the position of the poles of the closed-loop
+will be entirely based on the controller.\\
+Of course this will be true in the case of a perfect model but as proved in the section \ref{section_validation}, the
+parameter $\tau$ of the transfer function (which fixes the pole of it) don't seems to move a lot depending on the 
+operating point. We can conclude from this that the best choice is:
+
+\begin{equation}
+    T_i = \tau
+\end{equation}
+
+for each controller, which leads to:
+
+\begin{equation}
+    C_{PI}(s) = k_p \left( \frac{\tau s + 1}{\tau s} \right) 
+    \label{eq:controller_PI}
+\end{equation}
+
+\section{Reference tracking}
+
+For tracking purposes, the method used to reject disturbances can also be applied. Indeed, a reference with $D(s)$ at
+its denominator will be perfectly followed if the controller denominator contains $D(s)$.
+
+\begin{align}
+    R(s) &= \mathcal{L}\left\{A \sin (8 \pi t)\right\} \\
+    &= \frac{8 A \pi}{s^2 + 64\pi^2}
+\end{align}
+
+A second controller is needed to ensure the tracking of a $4 Hz$ sine:
+
+\begin{equation}
+    C_{\sin}(s) = \frac{1}{s^2 + 64\pi^2}
+    \label{eq:controller_sin}
+\end{equation}
+
+This controller has no parameter that can be moved as we chose a minimalist controller. 
+
+\section{Merging and discretization of the controllers}
+
+The total continuous controller is the product of the two previously built controllers because they are put in series, 
+which gives a the following structure:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/controller_structure.png}
+    \caption{Structure of the combined \textit{continuous time} controller}
+    \label{fig:controller_structure}
+\end{figure}
+
