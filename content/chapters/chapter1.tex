@@ -1,6 +1,7 @@
 \setcounter{secnumdepth}{2}
 
 \chapter{System identification}
+\label{section_identification}
 
 Based on the mechanical equations of the DC motor, the form of the expected transfer function was already known:
 
@@ -10,10 +11,11 @@ Based on the mechanical equations of the DC motor, the form of the expected tran
 \end{equation}
 
 Because it has no pole in $0$ (or equivalently it is a non-integrator system), the response of the system to a step
-command is enough to find bth $A_0$ and $\tau$.\\
+command is enough to find both $A_0$ and $\tau$.\\
 
-In the following section, the identification of motor 1 will be explained in detail. The same method has also been 
-done with motor 2 to find its own transfer function.
+As the plant is not perfect (the motors have some friction variations depending on the temperature, there is noise, 
+\dots), the objective is to establish a linearized model of it. In the following section, the determination of a
+model for motor 1 will be explained in detail.
 
 \section{Step response}
 
@@ -47,8 +49,9 @@ With this in mind, the following step response has been recorded:
 \end{figure}
 
 Where the command is first set at a high enough voltage ($\geq 1.5 V$, based on \ref{static_characteristic_motor_1}). 
-After the velocity saturates, it lowers to a value where the velocity will stabilize. This operating point 
-\textit{$OP_{1+}$} will correspond to the transfer function $G(s)$ that we are trying to estimate here.
+After the velocity saturates, it lowers to a value where the velocity will stabilize ($1.13 V$). This operating point 
+\textit{$OP_{1+}$} will correspond to the transfer function $G(s)$ that we are trying to estimate here. Then the step is
+introduced (with a magnitude of $0.13 V$).
 
 \begin{equation}
     OP_{1+} = \begin{bmatrix}
@@ -59,16 +62,16 @@ After the velocity saturates, it lowers to a value where the velocity will stabi
 
 With an coordinates change for easier visualization, the data plot \ref{estimated_step_response_positive_motor_1} is 
 used for the determination of $A_0$ and $\tau$. It is indeed known that for a transfer function in the form of 
-\ref{1_st_order_TF}, the parameter $A_0$ is equal to the asymptotic value of the step response divided by the height of
-the step. $\tau$ on the other hand is equal to the time after which the step response reaches $1/e$ ($\approx 0.63$)
+\ref{1_st_order_TF}, the parameter $A_0$ is equal to the asymptotic value of the step response divided by the amplitude 
+of the step. $\tau$ on the other hand is equal to the time after which the step response reaches $1/e$ ($\approx 0.63$)
 times the asymptotic step response. This gives as transfer function:
 
 \begin{equation}
-    G_{1+} = \frac{24.88}{19.15s + 1}
+    G_{1+}(s) = \frac{24.88}{1.915s + 1}
     \label{TF_mot1_+}
 \end{equation}
 
-The name $G_{1+}$ has been chosen because the "\textit{$1$}" indicates that it corresponds to the motor 1 and the 
+The name $G_{1+}(s)$ has been chosen because the "\textit{$1$}" indicates that it corresponds to the motor 1 and the 
 "\textit{$+$}" indicates that it is used for a positive speed. As shown on the static characteristic 
 \ref{static_characteristic_motor_1}, the operating point at which the system will be operating to have a negative speed 
 ($OP_{1-}$) is quite far from $OP_{1+}$, which means that another model will be needed to describe the behavior of the 
@@ -84,6 +87,43 @@ With the model \ref{TF_mot1_+}, the simulated step response can be computed and 
     \label{estimated_step_response_positive_motor_1}
 \end{figure}
 
-\section{validation}
+\section{Validation}
 \label{section_validation}
 
+The estimated transfer function established in section \ref{section_identification} must yet be tested. Indeed, as it
+is the result of the linearization of the real plant around the equilibrium point $OP_{1+}$ we have to ensure that it
+has the same behaviour as the plant even when the system is not in $OP_{1+}$.\\
+
+The system has been controlled by a step similar to the one in figure \ref{step_response_positive_motor_1} with slightly
+modified values. It started at $1.2 V$ and the downward step has been chosen with an amplitude of $0.05 V$. Figure 
+\ref{validation_A0_24} shows the step command with the real plant response and the response computed based on the
+transfer function \ref{TF_mot1_+}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=\textheight/3]{Pictures/validation_A0_24.png}
+    \caption{Validation of the model $G_{1+} (s)$}
+    \label{validation_A0_24}
+\end{figure}
+
+It appears quite clearly that the simulated response is not corresponding to the real one. Note that the first part of
+the response (until $\sim 10s$) is not interesting as the model don't have to take the velocity saturation into account.
+Based on the observation that the asymptotic value of the velocity was not corresponding between the real plant and the
+simulation, we tried changing $A_0$ to get a better matching. With $A_0 = 30$, the model was close to the reality as 
+shown in figure \ref{validation_A0_30}, which leads to the transfer function:
+
+\begin{equation}
+    \tilde{G}_{1+}(s) = \frac{30}{1.915 s + 1}
+\end{equation}
+
+The conclusion that can be drawn from this whole section is that depending on the operating point, the transfer function
+needs to be modified \textit{by a multiplicative factor} which means that the position of the pole won't change 
+depending on the operating point. This means that $G_{1+}(s)$ can be used if we keep in mind that the numerator can
+vary a little.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=\textheight/3]{Pictures/validation_A0_30.png}
+    \caption{Validation of the modified model $\tilde{G}_{1+}(s)$}
+    \label{validation_A0_30}
+\end{figure}
