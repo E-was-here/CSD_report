@@ -117,9 +117,8 @@ shown in figure \ref{validation_A0_30}, which leads to the transfer function:
 \end{equation}
 
 The conclusion that can be drawn from this whole section is that depending on the operating point, the transfer function
-needs to be modified \textit{by a multiplicative factor} which means that the position of the pole won't change 
-depending on the operating point. This means that $G_{1+}(s)$ can be used if we keep in mind that the numerator can
-vary a little.
+needs to be modified \textit{by a multiplicative factor} but the position of the pole don't change. This means that 
+$G_{1+}(s)$ can be used if we keep in mind that the numerator can vary a little.
 
 \begin{figure}[H]
     \centering
@@ -127,3 +126,28 @@ vary a little.
     \caption{Validation of the modified model $\tilde{G}_{1+}(s)$}
     \label{validation_A0_30}
 \end{figure}
+
+\section{Other transfer functions}
+
+Based on the same experiment, we determined the other transfer functions\footnote{With the naming convention mentioned 
+before}:
+
+\begin{align}
+    G_{1-}(s) &= \frac{A_0}{\tau s + 1} & OP_{1-} &= \begin{bmatrix}
+                \text{command} & = & \alpha V \\
+                \text{velocity} & = & \beta V
+                \end{bmatrix} 
+    \label{TF_mot1_-} \\
+    G_{2+}(s) &= \frac{19.51}{1.7 s + 1} & OP_{2+} &= \begin{bmatrix}
+                \text{command} & = & 1.1 V \\
+                \text{velocity} & = & 2.4 V
+                \end{bmatrix} 
+    \label{TF_mot2_+} \\
+    G_{2-}(s) &= \frac{A_0}{\tau s + 1} & OP_{2-} &= \begin{bmatrix}
+                \text{command} & = & \alpha V \\
+                \text{velocity} & = & \beta V
+                \end{bmatrix} 
+    \label{TF_mot2_-}
+\end{align}
+
+
