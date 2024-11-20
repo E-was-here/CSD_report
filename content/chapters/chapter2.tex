@@ -1,4 +1,4 @@
-\setcounter{secnumdepth}{2}
+\setcounter{secnumdepth}{1}
 
 \chapter{Design of the controller}
 
@@ -72,19 +72,21 @@ its denominator will be perfectly followed if the controller denominator contain
 
 \begin{align}
     R(s) &= \mathcal{L}\left\{A \sin (8 \pi t)\right\} \\
-    &= \frac{8 A \pi}{s^2 + 64\pi^2}
+    &= \frac{8 A \pi}{s^2 + (8\pi)^2}
 \end{align}
 
 A second controller is needed to ensure the tracking of a $4 Hz$ sine:
 
 \begin{equation}
-    C_{\sin}(s) = \frac{1}{s^2 + 64\pi^2}
+    C_{\sin}(s) = \frac{1}{s^2 + (8\pi)^2}
     \label{eq:controller_sin}
 \end{equation}
 
 This controller has no parameter that can be moved as we chose a minimalist controller. 
 
-\section{Merging and discretization of the controllers}
+\section{Merging and discretization of the controller}
+
+\subsection{Merging}
 
 The total continuous controller is the product of the two previously built controllers because they are put in series, 
 which gives a the following structure:
@@ -95,4 +97,23 @@ which gives a the following structure:
     \caption{Structure of the combined \textit{continuous time} controller}
     \label{fig:controller_structure}
 \end{figure}
+
+Meaning that the transfer function of the whole controller is:
+
+\begin{align}
+    C(s) &= k_p \times \frac{\tau s + 1}{\tau s} \times \frac{1}{s^2 + (8 \pi)^2}\\
+    &= k_p \times \frac{\tau s + 1}{\tau s^3 + (8 \pi)^2 s}
+    \label{eq:full_controller_TF}
+\end{align}
+
+\subsection{Discretization}
+
+It is known that the discretization of the system will add a sampler and a holder before the system. This zero order 
+holder (ZOH) has to be taken into account at this step of the design. This implies that the discretized transfer 
+function of the system is not simply the Z-transform of its continuous time counterpart but rather:
+
+\begin{align}
+    G(z) &= \frac{z}{z-1} \times Z \left\{ \mathcal{L}^{-1}\left\{ \frac{G(s)}{s} \right\} \right\}\\
+    &= \frac{z}{z-1} \times Z \left\{ 1 - e^{-t/\tau}\right\}
+\end{align}
 
