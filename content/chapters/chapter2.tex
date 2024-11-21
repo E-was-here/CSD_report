@@ -108,6 +108,22 @@ Meaning that the transfer function of the whole controller is:
 
 \subsection{Discretization}
 
+The continuous transfer function is obtained by using the Tustin approximation\footnote{$s \leftrightarrow \frac{2}{T_s}
+\times\frac{z-1}{z+1}$} on the continuous time transfer function of the controller \ref{eq:full_controller_TF}. This 
+then leads to the recurrence equation which will be implemented in the digital controller.
+
+\begin{align}
+    C(z) = k_p \times \frac{(2\tau + T_s)T_s^2 z^3 + \big(2(2\tau + T_s)T_s^2 + (T_s - 2\tau)T_s^2\big)z^2 + \big(
+    (2\tau + T_s) T_s^2 + 2(T_s - 2\tau)T_s^2\big)z + (T_s - 2\tau)T_s^2}{\big(8\tau + 2(8\pi)^2 T_s^2\big)z^3 + \big(
+    -24\tau + 2 (8\pi)^2 T_s^2\big)z^2 + \big(24\tau - 2(8\pi)^2 T_s^2\big)z + (-8\tau - 2(8\pi)^2 T_s^2)}\\
+    u[n] = -\frac{a_1}{a_0} u[n-1] - \frac{a_2}{a_0} u[n-2] - \frac{a_3}{a_0} u[n-3] + \frac{b_0}{a_0} e[n] + \frac{b_1}
+    {a_0} e[n-1] + \frac{b_2}{a_0} e[n-2] + \frac{b_3}{a_0} e[n-3]
+\end{align}
+
+
+
+\subsubsection{The following has to be discussed with the TA as it doesn't look useful to me}
+
 It is known that the discretization of the system will add a sampler and a holder before the system. This zero order 
 holder (ZOH) has to be taken into account at this step of the design. This implies that the discretized transfer 
 function of the system is not simply the Z-transform of its continuous time counterpart but rather:
