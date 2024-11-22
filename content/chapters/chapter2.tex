@@ -88,6 +88,7 @@ This controller has no parameter that can be moved as we chose a minimalist cont
 \fi
 
 \section{Frequential analysis}
+\label{section:freq_analysis}
 
 As the next objective is to perfectly track a $4 Hz$ reference, the bandwidth of the closed loop has to be studied. If
 it is greater than $4 \times 2\pi \approx 25$, then there is no need to add a part to the controller's structure.\\
@@ -101,13 +102,28 @@ has to be defined. In continuous time, it looks like:
     \label{fig:CL structure}
 \end{figure}
 
-To determine the gain (= $k_p$) that can be put in the system, the \texttt{margin} method of matlab is used (fig ) on the 
-open-loop transfer function. A gain margin of $6 dB$ has to be maintained \footnote{by convention} to ensure the 
-stability of the system once the loop is closed. \\
+To determine the gain (= $k_p$) that can be put in the system, the \texttt{margin} method of matlab is used (fig 
+\ref{fig:OL bode}) on the open-loop transfer function with $k_p$ set to 1. A gain margin of $6 dB$ has to be maintained 
+\footnote{by convention} to ensure the stability of the system once the loop is closed. \\
 
 \begin{figure}[H]
     \centering
     \includegraphics[height=\textheight/3]{Pictures/bode_OL.png}
-    \caption{Bode diagram of the open loop system with the margins}
+    \caption{Bode diagram of the open loop system with the stability margins}
     \label{fig:OL bode}
 \end{figure}
+
+To keep a gain margin of at least $6 dB$, we can multiply $k_p$ (which was set to 1) by $27.7 dB = 10^{27.7/20} = 24.26$
+. This means that if the loop is closed with $k_p = 24$, the closed loop system will be stable and it's bandwidth can
+be determined. This is done by taking the frequency at which the gain of the closed loop system falls under $-3 dB$.\\ 
+Figure \ref{fig:CL bode} gives a bandwidth of around $709 \text{rad}/s$. However to be more realistic and also to stay 
+with a small phase (as it reaches $-200 ^{\circ}$ when the magnitude is $-3 dB$), the "\textit{safe}" bandwidth is $111 
+\text{rad}/s$. This proves that a simple PI controller is sufficient to perfectly track a signal at $4 Hz$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=\textheight/3]{Pictures/bode_CL.png}
+    \caption{Bode diagram of the closed loop system for $k_p = 24$}
+    \label{fig:CL bode}
+\end{figure}
+
