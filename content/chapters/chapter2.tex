@@ -65,14 +65,16 @@ for each controller, which leads to:
     \label{eq:controller_PI}
 \end{equation}
 
+
+\iffalse
 \section{Reference tracking}
 
 For tracking purposes, the method used to reject disturbances can also be applied. Indeed, a reference with $D(s)$ at
 its denominator will be perfectly followed if the controller denominator contains $D(s)$.
 
 \begin{align}
-    R(s) &= \mathcal{L}\left\{A \sin (8 \pi t)\right\} \\
-    &= \frac{8 A \pi}{s^2 + (8\pi)^2}
+    R(s) &= \mathcal{L}\left\{A \sin (8 \pi t + \varphi)\right\} \\
+    &= \frac{8 A \pi e^{-\frac{\varphi s}{8 \pi}}}{s^2 + (8\pi)^2}
 \end{align}
 
 A second controller is needed to ensure the tracking of a $4 Hz$ sine:
@@ -83,53 +85,29 @@ A second controller is needed to ensure the tracking of a $4 Hz$ sine:
 \end{equation}
 
 This controller has no parameter that can be moved as we chose a minimalist controller. 
+\fi
 
-\section{Merging and discretization of the controller}
+\section{Frequential analysis}
 
-\subsection{Merging}
-
-The total continuous controller is the product of the two previously built controllers because they are put in series, 
-which gives a the following structure:
+As the next objective is to perfectly track a $4 Hz$ reference, the bandwidth of the closed loop has to be studied. If
+it is greater than $4 \times 2\pi \approx 25$, then there is no need to add a part to the controller's structure.\\
+The bandwidth is determined using the Bode curves of the closed loop. This means that the structure of the regulator
+has to be defined. In continuous time, it looks like:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{Pictures/controller_structure.png}
-    \caption{Structure of the combined \textit{continuous time} controller}
-    \label{fig:controller_structure}
+    \includegraphics[height=\textheight/7]{Pictures/controller_structure.png}
+    \caption{Structure of the closed loop system with a PI regulator}
+    \label{fig:CL structure}
 \end{figure}
 
-Meaning that the transfer function of the whole controller is:
+To determine the gain (= $k_p$) that can be put in the system, the \texttt{margin} method of matlab is used (fig ) on the 
+open-loop transfer function. A gain margin of $6 dB$ has to be maintained \footnote{by convention} to ensure the 
+stability of the system once the loop is closed. \\
 
-\begin{align}
-    C(s) &= k_p \times \frac{\tau s + 1}{\tau s} \times \frac{1}{s^2 + (8 \pi)^2}\\
-    &= k_p \times \frac{\tau s + 1}{\tau s^3 + (8 \pi)^2 s}
-    \label{eq:full_controller_TF}
-\end{align}
-
-\subsection{Discretization}
-
-The continuous transfer function is obtained by using the Tustin approximation\footnote{$s \leftrightarrow \frac{2}{T_s}
-\times\frac{z-1}{z+1}$} on the continuous time transfer function of the controller \ref{eq:full_controller_TF}. This 
-then leads to the recurrence equation which will be implemented in the digital controller.
-
-\begin{align}
-    C(z) = k_p \times \frac{(2\tau + T_s)T_s^2 z^3 + \big(2(2\tau + T_s)T_s^2 + (T_s - 2\tau)T_s^2\big)z^2 + \big(
-    (2\tau + T_s) T_s^2 + 2(T_s - 2\tau)T_s^2\big)z + (T_s - 2\tau)T_s^2}{\big(8\tau + 2(8\pi)^2 T_s^2\big)z^3 + \big(
-    -24\tau + 2 (8\pi)^2 T_s^2\big)z^2 + \big(24\tau - 2(8\pi)^2 T_s^2\big)z + (-8\tau - 2(8\pi)^2 T_s^2)}\\
-    u[n] = -\frac{a_1}{a_0} u[n-1] - \frac{a_2}{a_0} u[n-2] - \frac{a_3}{a_0} u[n-3] + \frac{b_0}{a_0} e[n] + \frac{b_1}
-    {a_0} e[n-1] + \frac{b_2}{a_0} e[n-2] + \frac{b_3}{a_0} e[n-3]
-\end{align}
-
-
-
-\subsubsection{The following has to be discussed with the TA as it doesn't look useful to me}
-
-It is known that the discretization of the system will add a sampler and a holder before the system. This zero order 
-holder (ZOH) has to be taken into account at this step of the design. This implies that the discretized transfer 
-function of the system is not simply the Z-transform of its continuous time counterpart but rather:
-
-\begin{align}
-    G(z) &= \frac{z}{z-1} \times Z \left\{ \mathcal{L}^{-1}\left\{ \frac{G(s)}{s} \right\} \right\}\\
-    &= \frac{z}{z-1} \times Z \left\{ 1 - e^{-t/\tau}\right\}
-\end{align}
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=\textheight/3]{Pictures/bode_OL.png}
+    \caption{Bode diagram of the open loop system with the margins}
+    \label{fig:OL bode}
+\end{figure}
