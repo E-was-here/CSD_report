@@ -50,6 +50,8 @@ With this in mind, the following step response has been recorded:
     \label{fig:step_response_positive_motor_1}
 \end{figure}
 
+%%NOT GOOD
+
 Where the command is first set at a high enough voltage ($\geq 1.5 V$, based on \ref{fig:static_characteristic_motor_1}). 
 After the velocity saturates, it lowers to a value where the velocity will stabilize ($1.13 V$). This operating point 
 \textit{$OP_{1+}$} will correspond to the transfer function $G(s)$ that we are trying to estimate here. Then the step is
@@ -65,7 +67,7 @@ introduced (with a magnitude of $0.13 V$).
 With an coordinates change for easier visualization, the data plot \ref{fig:estimated_step_response_positive_motor_1} is 
 used for the determination of $A_0$ and $\tau$. It is indeed known that for a transfer function in the form of 
 \ref{eq:1_st_order_TF}, the parameter $A_0$ is equal to the asymptotic value of the step response divided by the amplitude 
-of the step. $\tau$ on the other hand is equal to the time after which the step response reaches $1/e$ ($\approx 0.63$)
+of the step. $\tau$ on the other hand is equal to the time after which the step response reaches $\frac{e-1}{e}$ ($\approx 0.63$)
 times the asymptotic step response. This gives as transfer function:
 
 \begin{equation}
@@ -135,9 +137,9 @@ Based on the same experiment, we determined the other transfer functions\footnot
 before}:
 
 \begin{align}
-    G_{1-}(s) &= \frac{A_0}{\tau s + 1} & OP_{1-} &= \begin{bmatrix}
-                \text{command} & = & \alpha V \\
-                \text{velocity} & = & \beta V
+    G_{1-}(s) &= \frac{24.31}{1.85 s + 1} & OP_{1-} &= \begin{bmatrix}
+                \text{command} & = & -1.1 V \\
+                \text{velocity} & = & -1.494 V
                 \end{bmatrix} 
     \label{TF_mot1_-} \\
     G_{2+}(s) &= \frac{19.51}{1.7 s + 1} & OP_{2+} &= \begin{bmatrix}
@@ -145,9 +147,9 @@ before}:
                 \text{velocity} & = & 2.4 V
                 \end{bmatrix} 
     \label{TF_mot2_+} \\
-    G_{2-}(s) &= \frac{A_0}{\tau s + 1} & OP_{2-} &= \begin{bmatrix}
-                \text{command} & = & \alpha V \\
-                \text{velocity} & = & \beta V
+    G_{2-}(s) &= \frac{26.86}{2.09 s + 1} & OP_{2-} &= \begin{bmatrix}
+                \text{command} & = & -1.1 V \\
+                \text{velocity} & = & -2.51 V
                 \end{bmatrix} 
     \label{TF_mot2_-}
 \end{align}
