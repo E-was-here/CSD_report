@@ -23,8 +23,8 @@ The design of the controller will follow the following path:
     \item Reach any speed in $< 0.5 s$
 \end{enumerate}
 
-The method used here is to design the controller in there Laplace domain in the first time. Once the continuous time
-controller has the desired behaviour, it is discretized using the Tustin method (and without forgetting to take the
+The method used here is to design the controller in the Laplace domain in the first time. Once the continuous time
+controller has the desired behaviour, it is discretized using the Tustin method (without forgetting to take the
 ZOH into account).
 
 \section{Disturbance rejection}
