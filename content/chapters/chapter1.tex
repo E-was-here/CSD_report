@@ -3,7 +3,86 @@
 \chapter{System identification}
 \label{section:identification}
 
-Based on the mechanical equations of the DC motor, the form of the expected transfer function was already known:
+\section{Derivation of the System Dynamics}
+
+To analyze the transfer function of a system with two DC motors and a brake using current-driven dynamics, we incorporate the relationships between motor current, torque, and angular velocity. Using Newton's Second Law for rotational dynamics, we determine the torque balance on the shaft. The system's dynamics are described by the following mechanical equations:
+
+\begin{itemize}
+    \item \textbf{DC Motors:} The motors are current-driven, meaning the torque produced by each motor is proportional to the input current:
+    \begin{equation}
+        T_m = K I
+        \label{eq:dc_motor_eq}
+    \end{equation}
+    
+    \item \textbf{Brake:} The brake applies a frictional torque that opposes the rotation of the shaft. This braking torque is often modeled as proportional to the shaft velocity:
+    \begin{equation}
+        T_b = c_b \omega
+        \label{eq:brake_eq}
+    \end{equation}
+    
+    \item \textbf{Torque Balance on the Shaft:} The shaft's angular velocity is proportional to the net torque on the shaft. The frictional torque is given by:
+    \begin{equation}
+        T_f = b \omega, \quad \text{where } T_f \text{ is the friction torque.}
+        \label{eq:shaft_eq_friction}
+    \end{equation}
+    The total torque balance equation is:
+    \begin{equation}
+        T_s + T_f = T_m - T_b
+        \label{eq:shaft_eq}
+    \end{equation}
+    Substituting \eqref{eq:dc_motor_eq}, \eqref{eq:brake_eq}, and \eqref{eq:shaft_eq_friction} into \eqref{eq:shaft_eq}, we obtain:
+    \begin{equation}
+        J \frac{d\omega}{dt} + b \omega + c_b \omega = K I
+        \label{eq:shaft_eq_final}
+    \end{equation}
+    
+    \item \textbf{Electrical Dynamics:} Applying Kirchhoff's Voltage Law to the motor circuit:
+    \begin{equation}
+        L\frac{d i}{dt} + R i = V - K \omega
+        \label{eq:dc_motor_eq_final}
+    \end{equation}
+    where \( e = K \omega \) in \eqref{eq:dc_motor_eq_final} is the back EMF, proportional to the angular velocity of the motor shaft.
+\end{itemize}
+
+Taking the Laplace transform of the equations:
+
+1. For the torque balance on the shaft:
+\begin{equation}
+    J s \Omega(s) + (b + c_b) \Omega(s) = K I(s)
+    \label{eq:shaft_eq_final_laplace}
+\end{equation}
+
+2. For the electrical dynamics:
+\begin{equation}
+    L s I(s) + R I(s) = V(s) - K \Omega(s)
+    \label{eq:Kirchhoff_eq_final_laplace}
+\end{equation}
+
+By eliminating \( I(s) \), the transfer function relating the output (rotational speed of the shaft) \( \Omega(s) \) to the input voltage \( V(s) \) is derived:
+\begin{equation}
+    G(s) = \frac{\Omega(s)}{V(s)} = \frac{K}{(J s + b + c_b)(L s + R) + K^2}
+    \label{eq:2nd_st_order_TF}
+\end{equation}
+
+This describes the dynamic response of the DC motor, where the rotational speed is expressed in rad/sec per volt of input.
+
+\section{Characteristics of the Transfer Function}
+Based on the mechanical equations of the DC motor, the 2nd order system can be simplified to a first order system to reduce complexity and mitigate the effects of noise and friction variations.
+\begin{itemize}
+    \item In most DC motor systems, the electrical time constant $(L/R)$ is much smaller than the mechanical time constant $(J/b)$. Therefore, the electrical inductance $(L)$ has a negligible effect on the overall system dynamics, and the term 
+    $Ls$ can be ignored in the denominator of the transfer function.
+    \begin{equation}
+        G(s) = \frac{\Omega(s)}{V(s)} = \frac{K}{J s + b + c_b + \frac{K^2}{R}}
+        \label{eq:2nd_to_1st_order_TF}
+    \end{equation}
+    \item The system can now be represented as a first order system with a time constant $(\tau)$ and a steady-state gain $(A_0)$ .
+    \begin{equation}
+    {J s + b + c_b + \frac{K^2}{R}} = {\tau s + 1}, \quad \tau = \frac{J}{b + c_b + \frac{K^2}{R}} \quad A_0 = \frac{K}{b + c_b + \frac{K^2}{R}}
+    \label{eq:tao_eq}
+    \end{equation}
+\end{itemize}
+
+By making reasonable assumptions, the transfer function is linearized and approximated to match the expected form of a first order system transfer function, which is already known as:
 
 \begin{equation}
     G(s) = \frac{A_0}{\tau s + 1}
@@ -13,15 +92,18 @@ Based on the mechanical equations of the DC motor, the form of the expected tran
 Because it has no pole in $0$ (or equivalently it is a non-integrator system), the response of the system to a step
 command is enough to find both $A_0$ and $\tau$.\\
 
-As the plant is not perfect (the motors have some friction variations depending on the temperature, there is noise, 
-\dots), the objective is to establish a linearized model of it. In the following section, the determination of a
-transfer function for motor 1 will be explained in detail. This transfer function will link the speed of the shaft to
-the voltage applied to motor 1. We only study the speed and not the position because all of the requirements are on
-the speed, meaning that there is no point of studying the position.
+As the plant is not perfect (the motors have some friction variations depending on the temperature, there is noise, \dots), the objective is to establish a linearized model of it. 
+In the following section, the determination of a transfer function for motor 1 will be explained in detail. 
+This transfer function will link the speed of the shaft to the voltage applied to motor 1. 
+We focus on speed and not position because all the requirements are based on speed, making it unnecessary to study the position.\\
 
 \section{Step response}
 
-The starting point of the step response experiment is the static characteristic of the motor:
+As the internal workings of the motor were unknown, it was necessary to obtain its step response and perform system identification to understand its behavior. 
+Since the documentation lacked details such as the motor's torque or friction, its dynamics could not be calculated. 
+Therefore, a black box approach was used to determine the transfer function from input-output data.\\
+
+The step response experiment began with analysing the static characteristic of the motor:
 
 \begin{figure}[H]
     \centering
@@ -36,9 +118,9 @@ measured by a sensor that returns a voltage} (and $-6.5 V$ is minimum value). Th
 feasible}" in the requirements as a speed of $7 V$ could never been achieved, no matter what the input is.\\
 
 What is really interesting to understand is that the static characteristic gives the speed of the shaft after a
-sufficient amount of time (in theory, after an infinite amount of time bt in practice, once the transient response 
+sufficient amount of time (in theory, after an infinite amount of time but in practice, once the transient response 
 vanishes). By looking at it, it is clear that to have a speed that is different from $0 V$ and that is outside of the
-saturated region, a high command should be send to reach saturation and it must then be lowered to a point where the
+saturated region, a high command should be sent to reach saturation and it must then be lowered to a point where the
 speed is no longer saturating (a command between $1.1 V$ and $1.3 V$ approximately).\\
 
 With this in mind, the following step response has been recorded:
@@ -64,7 +146,7 @@ introduced (with a magnitude of $0.13 V$).
     \end{bmatrix}
 \end{equation}
 
-With an coordinates change for easier visualization, the data plot \ref{fig:estimated_step_response_positive_motor_1} is 
+With a coordinates change for easier visualization, the data plot \ref{fig:estimated_step_response_positive_motor_1} is 
 used for the determination of $A_0$ and $\tau$. It is indeed known that for a transfer function in the form of 
 \ref{eq:1_st_order_TF}, the parameter $A_0$ is equal to the asymptotic value of the step response divided by the amplitude 
 of the step. $\tau$ on the other hand is equal to the time after which the step response reaches $\frac{e-1}{e}$ ($\approx 0.63$)
@@ -111,7 +193,7 @@ transfer function \ref{eq:TF_mot1_+}.
 \end{figure}
 
 It appears quite clearly that the simulated response is not corresponding to the real one. Note that the first part of
-the response (until $\sim 10s$) is not interesting as the model don't have to take the velocity saturation into account.
+the response (until $\sim 10s$) is not interesting as the model does not have to take the velocity saturation into account.
 Based on the observation that the asymptotic value of the velocity was not corresponding between the real plant and the
 simulation, we tried changing $A_0$ to get a better matching. With $A_0 = 30$, the model was close to the reality as 
 shown in figure \ref{fig:validation_A0_30}, which leads to the transfer function:
@@ -121,7 +203,7 @@ shown in figure \ref{fig:validation_A0_30}, which leads to the transfer function
 \end{equation}
 
 The conclusion that can be drawn from this whole section is that depending on the operating point, the transfer function
-needs to be modified \textit{by a multiplicative factor} but the position of the pole don't change. This means that 
+needs to be modified \textit{by a multiplicative factor} but the position of the pole does not change. This means that 
 $G_{1+}(s)$ can be used if we keep in mind that the numerator can vary a little.
 
 \begin{figure}[H]

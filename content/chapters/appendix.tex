@@ -1,8 +1,6 @@
 \appendix
-\renewcommand{\thechapter}{\Alph{chapter}}
 
-
-\chapter{Tracking outside of the bandwidth}
+\section{Annex A : tracking outside of the bandwidth}
 \label{annex:tracking}
 
 If the requirements were to track a signal at a frequency higher than the bandwidth of the closed loop, two things could 
@@ -19,7 +17,7 @@ A widely used type of regulator is the lead compensator. Its principle is easy t
 plot of Bode curves. As the zero comes before the pole, the gain plot will be increasing at this point and the pole is 
 just there to ensure causality. The zero must be placed where the amplitude of the transfer function must be increased. 
 On the other hand, the pole simply has to be placed far enough to not decrease it where it needs to be high. Here is the 
-Bode plot for the closed loop with the zero placed where in $600 \text{rad}/s$ (where the magnitude started decreasing) 
+Bode plot for the closed loop with the zero placed in $600 \text{rad}/s$ (where the magnitude started decreasing) 
 and the pole in $1000 \text{rad}/s$:
 
 \begin{figure}[H]
@@ -57,8 +55,8 @@ following controller:
     &= k_p\times\frac{\tau s + 1}{\tau s(s^2+s+(1200)^2)}
 \end{align}
 
-By then following the same methodology as in section \ref{section:freq_analysis}, $k_p = 24\times 10^6$ allows an open 
-loop gain of $6 dB$ and the closed loop bandwidth reaches $1300 \text{rad}/s$ as it can be seen on figure 
+By then following the same methodology as in section \ref{section:freq_analysis}, $k_p = 24\times 10^6$ allows a gain 
+of $6 dB$ and the closed loop bandwidth reaches $1300 \text{rad}/s$ as it can be seen on figure 
 \ref{fig:spec_ref_tracker}. As this is only an annex, we will stop the analysis here even if this would certainly be 
 problematic due to saturation phenomenons\footnote{A simulink simulation would probably prove it}. 
 
