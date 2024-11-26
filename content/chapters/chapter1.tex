@@ -2,47 +2,56 @@
 
 \chapter{System identification}
 \label{section:identification}
-
 \section{Derivation of the System Dynamics}
 
-To analyze the transfer function of a system with two DC motors and a brake using current-driven dynamics, we incorporate the relationships between motor current, torque, and angular velocity. Using Newton's Second Law for rotational dynamics, we determine the torque balance on the shaft. The system's dynamics are described by the following mechanical equations:
+To analyze the transfer function of a system with two DC motors and a brake using current-driven dynamics, we 
+incorporate the relationships between motor current, torque, and angular velocity. Using Newton's Second Law for 
+rotational dynamics, we determine the torque balance on the shaft. The system's dynamics are described by the following 
+mechanical equations:
 
-\begin{itemize}
-    \item \textbf{DC Motors:} The motors are current-driven, meaning the torque produced by each motor is proportional to the input current:
-    \begin{equation}
-        T_m = K I
-        \label{eq:dc_motor_eq}
-    \end{equation}
-    
-    \item \textbf{Brake:} The brake applies a frictional torque that opposes the rotation of the shaft. This braking torque is often modeled as proportional to the shaft velocity:
-    \begin{equation}
-        T_b = c_b \omega
-        \label{eq:brake_eq}
-    \end{equation}
-    
-    \item \textbf{Torque Balance on the Shaft:} The shaft's angular velocity is proportional to the net torque on the shaft. The frictional torque is given by:
-    \begin{equation}
-        T_f = b \omega, \quad \text{where } T_f \text{ is the friction torque.}
-        \label{eq:shaft_eq_friction}
-    \end{equation}
-    The total torque balance equation is:
-    \begin{equation}
-        T_s + T_f = T_m - T_b
-        \label{eq:shaft_eq}
-    \end{equation}
-    Substituting \eqref{eq:dc_motor_eq}, \eqref{eq:brake_eq}, and \eqref{eq:shaft_eq_friction} into \eqref{eq:shaft_eq}, we obtain:
-    \begin{equation}
-        J \frac{d\omega}{dt} + b \omega + c_b \omega = K I
-        \label{eq:shaft_eq_final}
-    \end{equation}
-    
-    \item \textbf{Electrical Dynamics:} Applying Kirchhoff's Voltage Law to the motor circuit:
-    \begin{equation}
-        L\frac{d i}{dt} + R i = V - K \omega
-        \label{eq:dc_motor_eq_final}
-    \end{equation}
-    where \( e = K \omega \) in \eqref{eq:dc_motor_eq_final} is the back EMF, proportional to the angular velocity of the motor shaft.
-\end{itemize}
+\smallskip
+\noindent \textbf{DC Motors:} The motors are current-driven, meaning the torque produced by each motor is 
+proportional to the input current:
+\begin{equation}
+    T_m = K I
+    \label{eq:dc_motor_eq}
+\end{equation}
+
+\smallskip
+\noindent \textbf{Brake:} The brake applies a frictional torque that opposes the rotation of the shaft. This 
+braking torque is often modeled as proportional to the shaft velocity:
+\begin{equation}
+    T_b = c_b \omega
+    \label{eq:brake_eq}
+\end{equation}
+
+\smallskip
+\noindent \textbf{Torque Balance on the Shaft:} The shaft's angular velocity is proportional to the net 
+torque on the shaft. The frictional torque is given by:
+\begin{equation}
+    T_f = b \omega, \quad \text{where } T_f \text{ is the friction torque.}
+    \label{eq:shaft_eq_friction}
+\end{equation}
+The total torque balance equation is:
+\begin{equation}
+    T_s + T_f = T_m - T_b
+    \label{eq:shaft_eq}
+\end{equation}
+Substituting \eqref{eq:dc_motor_eq}, \eqref{eq:brake_eq}, and \eqref{eq:shaft_eq_friction} into \eqref{eq:shaft_eq}, we 
+obtain:
+\begin{equation}
+    J \frac{d\omega}{dt} + b \omega + c_b \omega = K I
+    \label{eq:shaft_eq_final}
+\end{equation}
+
+\smallskip
+\noindent \textbf{Electrical Dynamics:} Applying Kirchhoff's Voltage Law to the motor circuit:
+\begin{equation}
+    L\frac{d i}{dt} + R i = V - K \omega
+    \label{eq:dc_motor_eq_final}
+\end{equation}
+where $e = K \omega$ in \eqref{eq:dc_motor_eq_final} is the back EMF, proportional to the angular velocity of the 
+motor shaft.
 
 Taking the Laplace transform of the equations:
 
@@ -58,16 +67,21 @@ Taking the Laplace transform of the equations:
     \label{eq:Kirchhoff_eq_final_laplace}
 \end{equation}
 
-By eliminating \( I(s) \), the transfer function relating the output (rotational speed of the shaft) \( \Omega(s) \) to the input voltage \( V(s) \) is derived:
+By eliminating $I(s)$, the transfer function relating the output (rotational speed of the shaft) $\Omega(s)$ to the 
+input voltage $V(s)$ is derived:
 \begin{equation}
     G(s) = \frac{\Omega(s)}{V(s)} = \frac{K}{(J s + b + c_b)(L s + R) + K^2}
     \label{eq:2nd_st_order_TF}
 \end{equation}
 
-This describes the dynamic response of the DC motor, where the rotational speed is expressed in rad/sec per volt of input.
+This describes the dynamic response of the DC motor, where the rotational speed is expressed in rad/sec per volt of 
+input.
 
 \section{Characteristics of the Transfer Function}
-Based on the mechanical equations of the DC motor, the 2nd-order system can be simplified to a first order system to reduce complexity and mitigate the effects of noise and friction variations. By making reasonable assumptions, the transfer function is linearized and approximated to match the expected form of a first-order system transfer function, which is already known as:
+Based on the mechanical equations of the DC motor, the 2nd-order system can be simplified to a first order system to 
+reduce complexity and mitigate the effects of noise and friction variations. By making reasonable assumptions, the 
+transfer function is linearized and approximated to match the expected form of a first-order system transfer function, 
+which is already known as:
 
 \begin{equation}
     G(s) = \frac{A_0}{\tau s + 1}
@@ -113,8 +127,6 @@ With this in mind, the following step response has been recorded:
     \caption{Step response of the system when the motor 1 has a step as command}
     \label{fig:step_response_positive_motor_1}
 \end{figure}
-
-%%NOT GOOD
 
 Where the command is first set at a high enough voltage ($\geq 1.5 V$, based on \ref{fig:static_characteristic_motor_1}). 
 After the velocity saturates, it lowers to a value where the velocity will stabilize ($1.13 V$). This operating point 
