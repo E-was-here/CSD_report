@@ -92,15 +92,18 @@ By making reasonable assumptions, the transfer function is linearized and approx
 Because it has no pole in $0$ (or equivalently it is a non-integrator system), the response of the system to a step
 command is enough to find both $A_0$ and $\tau$.\\
 
-As the plant is not perfect (the motors have some friction variations depending on the temperature, there is noise, 
-\dots), the objective is to establish a linearized model of it. In the following section, the determination of a
-transfer function for motor 1 will be explained in detail. This transfer function will link the speed of the shaft to
-the voltage applied to motor 1. We only study the speed and not the position because all of the requirements are on
-the speed, meaning that there is no point of studying the position.
+As the plant is not perfect (the motors have some friction variations depending on the temperature, there is noise, \dots), the objective is to establish a linearized model of it. 
+In the following section, the determination of a transfer function for motor 1 will be explained in detail. 
+This transfer function will link the speed of the shaft to the voltage applied to motor 1. 
+We focus on speed and not position because all the requirements are based on speed, making it unnecessary to study the position.\\
 
 \section{Step response}
 
-The starting point of the step response experiment is the static characteristic of the motor:
+As the internal workings of the motor were unknown, it was necessary to obtain its step response and perform system identification to understand its behavior. 
+Since the documentation lacked details such as the motor's torque or friction, its dynamics could not be calculated. 
+Therefore, a black box approach was used to determine the transfer function from input-output data.\\
+
+The step response experiment began with analysing the static characteristic of the motor:
 
 \begin{figure}[H]
     \centering
