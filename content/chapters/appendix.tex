@@ -1,6 +1,8 @@
 \appendix
+\renewcommand{\thechapter}{\Alph{chapter}}
 
-\section{Annex A : tracking outside of the bandwidth}
+
+\chapter{Tracking outside of the bandwidth}
 \label{annex:tracking}
 
 If the requirements were to track a signal at a frequency higher than the bandwidth of the closed loop, two things could 
@@ -55,9 +57,9 @@ following controller:
     &= k_p\times\frac{\tau s + 1}{\tau s(s^2+s+(1200)^2)}
 \end{align}
 
-By then following the same methodology as in section \ref{section:freq_analysis}, $k_p = 24\times 10^6$ allows a gain 
-of $6 dB$ and the closed loop bandwidth reaches $1300 \text{rad}/s$ as it can be seen on figure \ref{
-fig:spec_ref_tracker}. As this is only an annex, we will stop the analysis here even if this would certainly be 
+By then following the same methodology as in section \ref{section:freq_analysis}, $k_p = 24\times 10^6$ allows an open 
+loop gain of $6 dB$ and the closed loop bandwidth reaches $1300 \text{rad}/s$ as it can be seen on figure 
+\ref{fig:spec_ref_tracker}. As this is only an annex, we will stop the analysis here even if this would certainly be 
 problematic due to saturation phenomenons\footnote{A simulink simulation would probably prove it}. 
 
 \begin{figure}[H]
