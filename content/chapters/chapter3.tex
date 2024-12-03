@@ -1,3 +1,199 @@
-\setcounter{secnumdepth}{2}
+\chapter{LQR Controller}
 
-\chapter{LQR controller}
+\section{State Space Model}
+In control system design, it is often easier to define a parameterized state-space model in continuous time because physical laws are typically described using differential equations. The linear state-space representation in continuous-time has the following form:
+
+\begin{equation}
+    \dot{\mathbf{x}} = \mathbf{A} \mathbf{x} + \mathbf{B} \mathbf{u}
+    \label{eq:state_space_models}
+\end{equation}
+
+where \( \mathbf{x} \) is the state vector, \( \mathbf{A} \) is the state matrix that represents the system dynamics, \( \mathbf{B} \) is the input matrix that represents the control input, and \( \mathbf{u} \) is the input vector.
+The state-space representation can be explicitly defined as:
+
+\begin{equation}
+    \dot{\mathbf{x}}(t) = \begin{bmatrix}
+    \frac{-1}{\tau_1} & 0 \\ 
+    0 & \frac{-1}{\tau_2}
+    \end{bmatrix} \mathbf{x}(t) + \begin{bmatrix} 
+    \frac{A_{01}}{\tau_1} \\ 
+    \frac{A_{02}}{\tau_2} 
+    \end{bmatrix}\mathbf{u}(t)
+    \label{eq:state_space_model_cx}
+\end{equation}
+
+The output equation is given by:
+
+\begin{equation}
+    \mathbf{y}(t) = \begin{bmatrix} 1 & 1 \end{bmatrix}\mathbf{x}(t) + \begin{bmatrix} 0 & 0 \end{bmatrix}\mathbf{u}(t)
+    \label{eq:state_space_model_cy}
+\end{equation}
+
+where \( \mathbf{y} \) is the output vector, which also comprises the shaft angular velocity \( \omega \) and the motor voltage \( V \).
+
+\section{Discrete-Time State-Space Model}
+We convert the continuous-time state-space model \eqref{eq:state_space_model_cx} and \eqref{eq:state_space_model_cy} to a discrete-time state-space model using the parameters:
+
+\[
+\tau_1 = 1.915, \quad \tau_2 = 1.7, \quad A_{01} = 24.88, \quad A_{02} = 19.51.
+\]
+
+The continuous-time matrices are computed as:
+
+\[
+\mathbf{A} = 
+\begin{bmatrix}
+-0.5218 & 0 \\
+0 & -0.5882
+\end{bmatrix}, \quad 
+\mathbf{B} = 
+\begin{bmatrix}
+12.9870 \\
+11.4765
+\end{bmatrix}.
+\]
+
+For a sampling time \( T_s = 0.1 \, \text{seconds} \), the discrete-time matrices \( A_{T_s} \) and \( B_{T_s} \) are calculated as follows:
+
+\begin{itemize}
+    \item \textbf{Discrete-Time State Matrix} (\(A_{T_s}\)): 
+   Using the matrix exponential formula:
+   \[
+   A_{T_s} = e^{A T_s},
+   \]
+   where:
+   \[
+   A T_s = 
+   \begin{bmatrix}
+   -0.05218 & 0 \\
+   0 & -0.05882
+   \end{bmatrix}.
+   \]
+   Since \( A T_s \) is a diagonal matrix, the matrix exponential is computed as:
+   \[
+   e^{A T_s} = 
+   \begin{bmatrix}
+   e^{-0.05218} & 0 \\
+   0 & e^{-0.05882}
+   \end{bmatrix}.
+   \]
+   Evaluating the exponentials gives:
+   \[
+   e^{-0.05218} \approx 0.9491, \quad e^{-0.05882} \approx 0.9429.
+   \]
+   Therefore, we find:
+   \[
+   A_{T_s} = 
+   \begin{bmatrix}
+   0.9491 & 0 \\
+   0 & 0.9429
+   \end{bmatrix}.
+   \]
+\end{itemize}
+
+\begin{itemize} 
+    \item \textbf{Discrete-Time Input Matrix} (\(B_{T_s}\)): 
+   Using the formula:
+   \[
+   B_{T_s} = \int_0^{T_s} e^{A \zeta} B \, d\zeta,
+   \]
+   and solving numerically, we find:
+   \[
+   B_{T_s} = 
+   \begin{bmatrix}
+   1.2662 \\
+   1.1149
+   \end{bmatrix}.
+   \]
+\end{itemize}
+
+Thus, the discrete-time state-space representation of the system is:
+
+\[
+x[k+1] = A_{T_s} x[k] + B_{T_s} u[k],
+\]
+\[
+y[k] = C x[k],
+\]
+
+where:
+
+\[
+A_{T_s} = 
+\begin{bmatrix}
+0.9491 & 0 \\
+0 & 0.9429
+\end{bmatrix}, \quad
+B_{T_s} = 
+\begin{bmatrix}
+1.2662 \\
+1.1149
+\end{bmatrix}, \quad
+C = 
+\begin{bmatrix}
+1 & 1
+\end{bmatrix}.
+\]
+
+Finally, the sampled system is equivalent to a discrete-time system with these matrices. We will now use this representation to design an LQR controller for the given discrete-time system.
+
+\section{LQR Design for Discrete-Time System}
+
+The goal of the Linear Quadratic Regulator (LQR) is to minimize the quadratic cost function:
+
+\[
+J = \sum_{k=0}^\infty \left( x[k]^\top Q x[k] + u[k]^\top R u[k] \right).
+\]
+
+The weighting matrices \( Q \) and \( R \) must be selected based on system requirements:
+
+\begin{itemize}
+    \item \( Q \): Penalizes state deviations, typically represented as a diagonal matrix, e.g., \( Q = \text{diag}(q_1, q_2) \).
+    \item \( R \): Penalizes large control efforts, usually a positive scalar, \( R > 0 \).
+\end{itemize}
+
+For our design, we assume the following weighting matrices:
+
+\[
+Q = \begin{bmatrix}
+10 & 0 \\
+0 & 1
+\end{bmatrix}, \quad R = 0.1.
+\]
+
+The Discrete-Time Algebraic Riccati Equation (DARE) is given by:
+
+\[
+P = A_{T_s}^\top P A_{T_s} - \left(A_{T_s}^\top P B_{T_s} \right) 
+\left(R + B_{T_s}^\top P B_{T_s} \right)^{-1} 
+\left(B_{T_s}^\top P A_{T_s} \right) + Q.
+\]
+
+The optimal feedback gain matrix \( K \) is computed as:
+
+\[
+K = \left( R + B_{T_s}^\top P B_{T_s} \right)^{-1} \left(B_{T_s}^\top P A_{T_s} \right).
+\]
+
+The LQR controller generates the optimal control input:
+
+\[
+u[k] = -K x[k],
+\]
+
+where \( K \) is the gain matrix. We will compute \( K \) using MATLAB.
+
+\subsection*{LQR Feedback Law}
+The two motors share control effort based on these gains. If the shaft angular velocities are \( w_{1} \) and \( w_{2} \), then the control law is:
+
+\[
+u[k] = -K x[k], \quad u_{1} = -K_{1} w_{1}, \quad u_{2} = -K_{2} w_{2}.
+\]
+
+The computation results yield:
+
+\[
+K = \begin{bmatrix}
+3.2 \\ 2.7
+\end{bmatrix}, \quad u_{1} = 3.2 w_{1}, \quad u_{2} = 2.7 w_{2}.
+\]
