@@ -164,12 +164,20 @@ where:
 
 Finally, the sampled system is equivalent to a discrete-time system with these matrices. We will now use this representation to design an LQR controller for the given discrete-time system.
 
-\section{Regulator design}
+\section{Controller design}
 
 To build a state feedback regulator, two steps must be done. First, an observer has to be built to derive the state of 
 the system from the input and the output of it. Then, the state feedback control law must be determined.\\
 The design of those two parts (observer and state feedback) can be done independently thanks to the separation 
-principle.
+principle.\\
+The structure of the whole controller will be:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \textwidth]{Pictures/lqr_controller.png}
+    \caption{Structure of the LQR controller}
+    \label{fig:lqr structure}
+\end{figure}
 
 \subsection{Observer}
 
