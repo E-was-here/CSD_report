@@ -1,15 +1,36 @@
 \chapter{LQR Controller}
 
 \section{State Space Model}
-In control system design, it is often easier to define a parameterized state-space model in continuous time because physical laws are typically described using differential equations. The linear state-space representation in continuous-time has the following form:
+In control system design, it is often easier to define a parameterized state-space model in continuous time because 
+physical laws are typically described using differential equations. The linear state-space representation in 
+continuous-time has the following form:
 
 \begin{equation}
-    \dot{\mathbf{x}} = \mathbf{A} \mathbf{x} + \mathbf{B} \mathbf{u}
+    \dot{\mathbf{x}} = A \mathbf{x} + B \mathbf{u}
     \label{eq:state_space_models}
 \end{equation}
 
-where \( \mathbf{x} \) is the state vector, \( \mathbf{A} \) is the state matrix that represents the system dynamics, \( \mathbf{B} \) is the input matrix that represents the control input, and \( \mathbf{u} \) is the input vector.
-The state-space representation can be explicitly defined as:
+where \( \mathbf{x} \) is the state vector, \( A \) is the state matrix that represents the system dynamics, 
+\( B \) is the input matrix that represents the control input, and \( \mathbf{u} \) is the input vector.\\
+To get to the state space representation from the transfer function is quite easy as each motor is a $1^{st}$ order
+system. By using the following property of the Laplace transform:
+
+\begin{align}
+    X(s) &= \mathcal{L}\left\{x(t)\right\}\\
+    s X(s) &= \mathcal{L}\left\{\frac{d x(t)}{dt}\right\}
+\end{align}
+
+The transfer function \ref{eq:1_st_order_TF} can be put in the temporal domain:
+
+\begin{align}
+    G(s) = \frac{Y(s)}{U(s)} &= \frac{A_0}{\tau s + 1}\\
+    \left(\tau s + 1\right) Y(s) &= A_0 U(s)\\
+    \tau \dot{y}(t) + y(t) &= A_0 u(t)\\
+    \dot{y}(t) &= \frac{-1}{\tau} y(t) + \frac{A_0}{\tau} u(t)
+\end{align}
+
+This can be done for both motors with respectively ($u_1/y_1$) and ($u_2/y_2$) as input and output. With the choice of 
+state $x_i(t) = y_i(t)$, the state space representation becomes
 
 \begin{equation}
     \dot{\mathbf{x}}(t) = \begin{bmatrix}
@@ -22,17 +43,16 @@ The state-space representation can be explicitly defined as:
     \label{eq:state_space_model_cx}
 \end{equation}
 
-The output equation is given by:
-
 \begin{equation}
-    \mathbf{y}(t) = \begin{bmatrix} 1 & 1 \end{bmatrix}\mathbf{x}(t) + \begin{bmatrix} 0 & 0 \end{bmatrix}\mathbf{u}(t)
+    y(t) = \begin{bmatrix} 1 & 1 \end{bmatrix}\mathbf{x}(t)
     \label{eq:state_space_model_cy}
 \end{equation}
 
-where \( \mathbf{y} \) is the output vector, which also comprises the shaft angular velocity \( \omega \) and the motor voltage \( V \).
+where \( y \) is the velocity output.
 
 \section{Discrete-Time State-Space Model}
-We convert the continuous-time state-space model \eqref{eq:state_space_model_cx} and \eqref{eq:state_space_model_cy} to a discrete-time state-space model using the parameters:
+We convert the continuous-time state-space model \eqref{eq:state_space_model_cx} and \eqref{eq:state_space_model_cy} to 
+a discrete-time state-space model using the parameters:
 
 \[
 \tau_1 = 1.915, \quad \tau_2 = 1.7, \quad A_{01} = 24.88, \quad A_{02} = 19.51.
@@ -181,7 +201,7 @@ The LQR controller generates the optimal control input:
 u[k] = -K x[k],
 \]
 
-where \( K \) is the gain matrix. We will compute \( K \) using MATLAB.
+where \( K \) is the gain matrix, that will be computed using MATLAB.
 
 \subsection*{LQR Feedback Law}
 The two motors share control effort based on these gains. If the shaft angular velocities are \( w_{1} \) and \( w_{2} \), then the control law is:
