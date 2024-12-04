@@ -29,12 +29,12 @@ system. By using the following property of the Laplace transform:
 
 The transfer function \ref{eq:1_st_order_TF} can be put in the temporal domain:
 
-\begin{align}
-    G(s) = \frac{Y(s)}{U(s)} &= \frac{A_0}{\tau s + 1}\\
-    \left(\tau s + 1\right) Y(s) &= A_0 U(s)\\
-    \tau \dot{y}(t) + y(t) &= A_0 u(t)\\
-    \dot{y}(t) &= \frac{-1}{\tau} y(t) + \frac{A_0}{\tau} u(t)
-\end{align}
+\begin{gather}
+    G(s) = \frac{Y(s)}{U(s)} = \frac{A_0}{\tau s + 1}\\
+    \left(\tau s + 1\right) Y(s) = A_0 U(s)\\
+    \tau \dot{y}(t) + y(t) = A_0 u(t)\\
+    \dot{y}(t) = \frac{-1}{\tau} y(t) + \frac{A_0}{\tau} u(t)
+\end{gather}
 
 This can be done for both motors with respectively ($u_1/y_1$) and ($u_2/y_2$) as input and output. With the choice of 
 state $x_i(t) = y_i(t)$, the state space representation becomes
@@ -173,7 +173,50 @@ principle.
 
 \subsection{Observer}
 
-The observer will consist of a copy of the system and a feedback from the output of the real plant
+The observer will consist of a copy of the system and a feedback as shown in fig \ref{fig:observer structure}. In this
+section, the matrix $L$ must be determined in a way such that the resulting observer is asymptotic.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=\textheight/7]{Pictures/observer_general_structure.png}
+    \caption{Generic structure of an observer}
+    \label{fig:observer structure}
+\end{figure}
+
+For an observer to be asymptotic, the eigenvalues of $(A + LC)$ must be converging. It is however important to not skip
+a step in the design. First, the observability matrix $\mathcal{O}_2$ of the system must be computed:
+
+\begin{equation}
+    \mathcal{O}_2 = 
+    \begin{bmatrix}
+        C\\
+        C A_{T_s}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        1 & 1\\
+        0.9974 & 0.9971
+    \end{bmatrix}
+\end{equation}
+
+Now that we are sure that $\mathcal{O}_2$ is full rank, we can conclude that the system is detectable and that a matrix
+L that will make the observer asymptotic exists. Because the state error $\hat{x}(t) - x(t)$ converges with 
+$\lambda_i^t$\footnote{$\lambda_1$ and $\lambda_2$ being the eigenvalues of $A_{T_s} + LC$}, it is a smart choice to try to make
+those $\lambda_i$ close to 0.
+
+\begin{gather}
+    L = \begin{bmatrix} l_1\\l_2 \end{bmatrix}\\
+    A_{T_s} + L C = \begin{bmatrix} 1+l_1 & 1+l_2 \\ 0.9974+l_1 & 0.9971+l_2 \end{bmatrix}
+\end{gather}
+
+An easy choice is $l_1 = -0.9974$ and $l_2 = -1$ to make $A_{T_s} + LC$ diagonal while ensuring that $\left|\lambda_i
+\right| < 1$. This gives the final L matrix:
+
+\begin{equation}
+    L = \begin{bmatrix}
+        -0.9974 \\ -1
+    \end{bmatrix}
+\end{equation}
 
 
 \subsection{LQR Feedback Law}
