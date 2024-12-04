@@ -80,7 +80,7 @@ The continuous-time matrices are computed as:
 \end{bmatrix}.
 \]
 
-For a sampling time \( T_s = 0.1 \, \text{seconds} \), the discrete-time matrices \( A_{T_s} \) and \( B_{T_s} \) are calculated as follows:
+For a sampling time \( T_s = 0.005 \, \text{seconds} \), the discrete-time matrices \( A_{T_s} \) and \( B_{T_s} \) are calculated as follows:
 
 \begin{itemize}
     \item \textbf{Discrete-Time State Matrix} (\(A_{T_s}\)): 
@@ -89,33 +89,33 @@ For a sampling time \( T_s = 0.1 \, \text{seconds} \), the discrete-time matrice
    A_{T_s} = e^{A T_s},
    \]
    where:
-   \[
+  \[
    A T_s = 
    \begin{bmatrix}
-   -0.05218 & 0 \\
-   0 & -0.05882
+   -0.002609 & 0 \\
+   0 & -0.002941
    \end{bmatrix}.
    \]
    Since \( A T_s \) is a diagonal matrix, the matrix exponential is computed as:
    \[
    e^{A T_s} = 
    \begin{bmatrix}
-   e^{-0.05218} & 0 \\
-   0 & e^{-0.05882}
+   e^{-0.002609} & 0 \\
+   0 & e^{-0.002941}
    \end{bmatrix}.
    \]
    Evaluating the exponentials gives:
    \[
-   e^{-0.05218} \approx 0.9491, \quad e^{-0.05882} \approx 0.9429.
+   e^{-0.02609} \approx 0.9974, \quad e^{-0.002941} \approx 0.9971.
    \]
    Therefore, we find:
    \[
-   A_{T_s} = 
-   \begin{bmatrix}
-   0.9491 & 0 \\
-   0 & 0.9429
-   \end{bmatrix}.
-   \]
+    A_{T_s} = 
+    \begin{bmatrix}
+    0.9974 & 0 \\
+    0 & 0.9971
+    \end{bmatrix}.
+    \]
 \end{itemize}
 
 \begin{itemize} 
@@ -125,11 +125,11 @@ For a sampling time \( T_s = 0.1 \, \text{seconds} \), the discrete-time matrice
    B_{T_s} = \int_0^{T_s} e^{A \zeta} B \, d\zeta,
    \]
    and solving numerically, we find:
-   \[
+\[
    B_{T_s} = 
    \begin{bmatrix}
-   1.2662 \\
-   1.1149
+    0.0647 \\
+    0.0570
    \end{bmatrix}.
    \]
 \end{itemize}
@@ -146,20 +146,20 @@ y[k] = C x[k],
 where:
 
 \[
-A_{T_s} = 
-\begin{bmatrix}
-0.9491 & 0 \\
-0 & 0.9429
-\end{bmatrix}, \quad
-B_{T_s} = 
-\begin{bmatrix}
-1.2662 \\
-1.1149
-\end{bmatrix}, \quad
-C = 
-\begin{bmatrix}
-1 & 1
-\end{bmatrix}.
+    A_{T_s} = 
+    \begin{bmatrix}
+    0.9974 & 0 \\
+    0 & 0.9971
+    \end{bmatrix}, \quad
+    B_{T_s} = 
+    \begin{bmatrix}
+    0.0647 \\
+    0.0570
+    \end{bmatrix}, \quad
+    C = 
+    \begin{bmatrix}
+    1 & 1
+    \end{bmatrix}.
 \]
 
 Finally, the sampled system is equivalent to a discrete-time system with these matrices. We will now use this representation to design an LQR controller for the given discrete-time system.
@@ -217,6 +217,6 @@ The computation results yield:
 
 \[
 K = \begin{bmatrix}
-0.6618 \\ 0.0548
-\end{bmatrix}, \quad u_{1} = 0.6618 w_{1}, \quad u_{2} = 0.0548 w_{2}.
+        2.7161 \\ 0.2265
+\end{bmatrix}, \quad u_{1} = -2.7161 w_{1}, \quad u_{2} = -0.2265 w_{2}.
 \]
