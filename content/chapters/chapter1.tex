@@ -173,6 +173,11 @@ With the model \ref{eq:TF_mot1_+}, the simulated step response can be computed a
     \label{fig:estimated_step_response_positive_motor_1}
 \end{figure}
 
+By the way, the step response \ref{fig:estimated_step_response_positive_motor_1} can be used as a proof that the motor
+is a first order system: the initial value theorem states that if there are at least 2 more poles than zeros, the 
+derivative of the step response is continuous around 0. As here $\lim_{t \rightarrow 0^+} s(t) \neq 0$\footnote{with $s
+(t)$ the step response of the system}, there is only one pole and no zero to the transfer function $G_{1+}(s)$.
+
 \section{Validation}
 \label{section_validation}
 
