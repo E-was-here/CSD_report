@@ -1,5 +1,12 @@
 \chapter{LQR Controller}
 
+\section{Introduction}
+
+After validating the PID controller, the TA asked if it would be possible to design another controller able to only use
+the second motor when the first one struggles to reach the desired speed. This desire suits to the system as the motor 2
+is weaker than the first one: it can be seen easily as its time constant $\tau$ is greater than the one of motor 1, 
+meaning that it needs more time to reach a set value.
+
 \section{State Space Model}
 In control system design, it is often easier to define a parameterized state-space model in continuous time because 
 physical laws are typically described using differential equations. The linear state-space representation in 
@@ -48,11 +55,11 @@ state $x_i(t) = y_i(t)$, the state space representation becomes
     \label{eq:state_space_model_cy}
 \end{equation}
 
-where \( y \) is the velocity output.
+where \( y \) is the velocity output, which is just the sum of both imposed speeds ($y = y_1 + y_2$).
 
 \section{Discrete-Time State-Space Model}
 We convert the continuous-time state-space model \eqref{eq:state_space_model_cx} and \eqref{eq:state_space_model_cy} to 
-a discrete-time state-space model using the parameters:
+a discrete-time state-space model using the parameters from the identification section (\ref{section:identification}):
 
 \[
 \tau_1 = 1.915, \quad \tau_2 = 1.7, \quad A_{01} = 24.88, \quad A_{02} = 19.51.
@@ -157,28 +164,39 @@ C =
 
 Finally, the sampled system is equivalent to a discrete-time system with these matrices. We will now use this representation to design an LQR controller for the given discrete-time system.
 
-\section{LQR Design for Discrete-Time System}
+\section{Regulator design}
 
+To build a state feedback regulator, two steps must be done. First, an observer has to be built to derive the state of 
+the system from the input and the output of it. Then, the state feedback control law must be determined.
+
+\subsection{Observer}
+
+
+\subsection{LQR Feedback Law}
+
+To find a state feedback output law that corresponds to what we desire, the LQR method has been used.
 The goal of the Linear Quadratic Regulator (LQR) is to minimize the quadratic cost function:
 
 \[
 J = \sum_{k=0}^\infty \left( x[k]^\top Q x[k] + u[k]^\top R u[k] \right).
 \]
 
-The weighting matrices \( Q \) and \( R \) must be selected based on system requirements:
+The weighting square matrices \( Q \) and \( R \) must be selected based on system requirements:
 
 \begin{itemize}
     \item \( Q \): Penalizes state deviations, typically represented as a diagonal matrix, e.g., \( Q = \text{diag}(q_1, q_2) \).
     \item \( R \): Penalizes large control efforts, usually a positive scalar, \( R > 0 \).
 \end{itemize}
 
-For our design, we assume the following weighting matrices:
+For our design, $Q$ has been set to 1 because we don't care about state deviation. $R$ has been chosen such that the 
+controller will prioritize the use of motor 1 over motor 2. 
 
 \[
-Q = \begin{bmatrix}
+Q = 1, \quad
+R = \begin{bmatrix}
 10 & 0 \\
 0 & 1
-\end{bmatrix}, \quad R = 1.
+\end{bmatrix}.
 \]
 
 The Discrete-Time Algebraic Riccati Equation (DARE) is given by:
@@ -202,13 +220,6 @@ u[k] = -K x[k],
 \]
 
 where \( K \) is the gain matrix, that will be computed using MATLAB.
-
-\subsection*{LQR Feedback Law}
-The two motors share control effort based on these gains. If the shaft angular velocities are \( w_{1} \) and \( w_{2} \), then the control law is:
-
-\[
-u[k] = -K x[k], \quad u_{1} = -K_{1} w_{1}, \quad u_{2} = -K_{2} w_{2}.
-\]
 
 The computation results yield:
 

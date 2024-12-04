@@ -1,16 +1,4 @@
-Complete section 1.3 (doing some experiments for it).
-    simply adapting "Acquisition.m"
-    (~ 30 minutes of preparation + ~1h in the lab)
+TESTS for PID controller:
 
-Write PI report
-    (~ 1h30 outside of the lab)
+brake rejection on constant reference
 
-4 Hz Sine following (study + report + implementation + tests)
-    - study ~ 30 minutes
-    - report ~ 1h
-    - implementation ~ 30 minutes
-    - tests ~ 30 minutes
-
-Implementation of motor 2 controller
-    (~ 30 minutes)
-    note this will require the sine following step to be done
