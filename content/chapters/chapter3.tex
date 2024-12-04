@@ -89,7 +89,7 @@ For a sampling time \( T_s = 0.005 \, \text{seconds} \), the discrete-time matri
    A_{T_s} = e^{A T_s},
    \]
    where:
-  \[
+   \[
    A T_s = 
    \begin{bmatrix}
    -0.002609 & 0 \\
@@ -110,12 +110,12 @@ For a sampling time \( T_s = 0.005 \, \text{seconds} \), the discrete-time matri
    \]
    Therefore, we find:
    \[
-    A_{T_s} = 
-    \begin{bmatrix}
-    0.9974 & 0 \\
-    0 & 0.9971
-    \end{bmatrix}.
-    \]
+   A_{T_s} = 
+   \begin{bmatrix}
+   0.9491 & 0 \\
+   0 & 0.9429
+   \end{bmatrix}.
+   \]
 \end{itemize}
 
 \begin{itemize} 
@@ -125,7 +125,7 @@ For a sampling time \( T_s = 0.005 \, \text{seconds} \), the discrete-time matri
    B_{T_s} = \int_0^{T_s} e^{A \zeta} B \, d\zeta,
    \]
    and solving numerically, we find:
-\[
+   \[
    B_{T_s} = 
    \begin{bmatrix}
     0.0647 \\
@@ -167,9 +167,13 @@ Finally, the sampled system is equivalent to a discrete-time system with these m
 \section{Regulator design}
 
 To build a state feedback regulator, two steps must be done. First, an observer has to be built to derive the state of 
-the system from the input and the output of it. Then, the state feedback control law must be determined.
+the system from the input and the output of it. Then, the state feedback control law must be determined.\\
+The design of those two parts (observer and state feedback) can be done independently thanks to the separation 
+principle.
 
 \subsection{Observer}
+
+The observer will consist of a copy of the system and a feedback from the output of the real plant
 
 
 \subsection{LQR Feedback Law}
@@ -217,6 +221,6 @@ The computation results yield:
 
 \[
 K = \begin{bmatrix}
-        2.7161 \\ 0.2265
-\end{bmatrix}, \quad u_{1} = -2.7161 w_{1}, \quad u_{2} = -0.2265 w_{2}.
+    2.7161 \\ 0.2265
+\end{bmatrix}
 \]
