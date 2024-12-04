@@ -199,27 +199,19 @@ R = \begin{bmatrix}
 \end{bmatrix}.
 \]
 
-The Discrete-Time Algebraic Riccati Equation (DARE) is given by:
-
-\[
-P = A_{T_s}^\top P A_{T_s} - \left(A_{T_s}^\top P B_{T_s} \right) 
-\left(R + B_{T_s}^\top P B_{T_s} \right)^{-1} 
-\left(B_{T_s}^\top P A_{T_s} \right) + Q.
-\]
-
 The optimal feedback gain matrix \( K \) is computed as:
 
 \[
 K = \left( R + B_{T_s}^\top P B_{T_s} \right)^{-1} \left(B_{T_s}^\top P A_{T_s} \right).
 \]
 
-The LQR controller generates the optimal control input:
+Such that the controller state feedback will be:
 
 \[
-u[k] = -K x[k],
+u[k] = -K \hat{x}[k] + r[k],
 \]
 
-where \( K \) is the gain matrix, that will be computed using MATLAB.
+where \( K \) is the gain matrix, $\hat{x}$ the estimated state from the observer and $r$ the reference to follow.
 
 The computation results yield:
 
