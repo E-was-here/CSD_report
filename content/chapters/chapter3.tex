@@ -44,8 +44,8 @@ state $x_i(t) = y_i(t)$, the state space representation becomes
     \frac{-1}{\tau_1} & 0 \\ 
     0 & \frac{-1}{\tau_2}
     \end{bmatrix} \mathbf{x}(t) + \begin{bmatrix} 
-    \frac{A_{01}}{\tau_1} \\ 
-    \frac{A_{02}}{\tau_2} 
+    \frac{A_{01}}{\tau_1} & 0\\ 
+    0 & \frac{A_{02}}{\tau_2} 
     \end{bmatrix}\mathbf{u}(t)
     \label{eq:state_space_model_cx}
 \end{equation}
@@ -75,8 +75,8 @@ The continuous-time matrices are computed as:
 \end{bmatrix}, \quad 
 \mathbf{B} = 
 \begin{bmatrix}
-12.9870 \\
-11.4765
+12.9870 & 0\\
+0 & 11.4765
 \end{bmatrix}.
 \]
 
@@ -97,26 +97,14 @@ For a sampling time \( T_s = 0.005 \, \text{seconds} \), the discrete-time matri
    \end{bmatrix}.
    \]
    Since \( A T_s \) is a diagonal matrix, the matrix exponential is computed as:
-   \[
-   e^{A T_s} = 
-   \begin{bmatrix}
-   e^{-0.002609} & 0 \\
-   0 & e^{-0.002941}
-   \end{bmatrix}.
-   \]
-   Evaluating the exponentials gives:
-   \[
-   e^{-0.02609} \approx 0.9974, \quad e^{-0.002941} \approx 0.9971.
-   \]
-   Therefore, we find:
-   \[
-   A_{T_s} = 
-   \begin{bmatrix}
-   0.9491 & 0 \\
-   0 & 0.9429
-   \end{bmatrix}.
-   \]
+
+   \begin{gather*}
+        e^{A T_s} = \begin{bmatrix} e^{-0.002609} & 0 \\ 0 & e^{-0.002941} \end{bmatrix}\\
+        A_{T_s} = \begin{bmatrix} 0.9974 & 0 \\ 0 & 0.9971 \end{bmatrix}
+   \end{gather*}
+
 \end{itemize}
+
 
 \begin{itemize} 
     \item \textbf{Discrete-Time Input Matrix} (\(B_{T_s}\)): 
@@ -128,49 +116,31 @@ For a sampling time \( T_s = 0.005 \, \text{seconds} \), the discrete-time matri
    \[
    B_{T_s} = 
    \begin{bmatrix}
-    0.0647 \\
-    0.0570
+    0.0647 & 0\\
+    0 & 0.0570
    \end{bmatrix}.
    \]
 \end{itemize}
 
 Thus, the discrete-time state-space representation of the system is:
 
-\[
-x[k+1] = A_{T_s} x[k] + B_{T_s} u[k],
-\]
-\[
-y[k] = C x[k],
-\]
+\begin{gather*}
+    x[k+1] = 
+        \begin{bmatrix} 0.9974 & 0 \\ 0 & 0.9971 \end{bmatrix} x[k] 
+    + \begin{bmatrix} 0.0647 & 0\\ 0 & 0.0570 \end{bmatrix} u[k]\\
+    y[k] = \begin{bmatrix} 1 & 1 \end{bmatrix} x[k]
+\end{gather*}
 
-where:
 
-\[
-    A_{T_s} = 
-    \begin{bmatrix}
-    0.9974 & 0 \\
-    0 & 0.9971
-    \end{bmatrix}, \quad
-    B_{T_s} = 
-    \begin{bmatrix}
-    0.0647 \\
-    0.0570
-    \end{bmatrix}, \quad
-    C = 
-    \begin{bmatrix}
-    1 & 1
-    \end{bmatrix}.
-\]
 
 Finally, the sampled system is equivalent to a discrete-time system with these matrices. We will now use this representation to design an LQR controller for the given discrete-time system.
 
 \section{Controller design}
 
-To build a state feedback regulator, two steps must be done. First, an observer has to be built to derive the state of 
+To build a state feedback regulator, two steps must be completed. First, an observer has to be built to derive the state of 
 the system from the input and the output of it. Then, the state feedback control law must be determined.\\
 The design of those two parts (observer and state feedback) can be done independently thanks to the separation 
-principle.\\
-The structure of the whole controller will be:
+principle. The structure of the whole controller will be:
 
 \begin{figure}[H]
     \centering
@@ -249,8 +219,8 @@ controller will prioritize the use of motor 1 over motor 2.
 \[
 Q = 1, \quad
 R = \begin{bmatrix}
-10 & 0 \\
-0 & 1
+1 & 0 \\
+0 & 5
 \end{bmatrix}.
 \]
 
@@ -272,6 +242,7 @@ The computation results yield:
 
 \[
 K = \begin{bmatrix}
-    2.7161 \\ 0.2265
+    0.9299 & 0\\
+    0 & 0.3938
 \end{bmatrix}
 \]
