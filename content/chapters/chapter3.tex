@@ -1,6 +1,7 @@
 \chapter{LQR Controller}
 
 \section{Introduction}
+\label{section:lqr introduction}
 
 After validating the PID controller, the TA asked if it would be possible to design another controller able to only use
 the second motor when the first one struggles to reach the desired speed. This desire suits to the system as the motor 2
@@ -145,8 +146,7 @@ speed sensor. This gives rise to a really simple block diagram:
     \label{fig:lqr structure}
 \end{figure}
 
-The determination of the value for $K$
-
+The determination of the value for $K$ has been done using the LQR algorithm.
 % observer derivation, left in comment with respect to the time spent writing the subsection :')
 
 \iffalse
@@ -198,24 +198,23 @@ An easy choice is $l_1 = -0.9974$ and $l_2 = -1$ to make $A_{T_s} + LC$ diagonal
 \end{equation}
 \fi
 
-\subsection{LQR Feedback Law}
-
-To find a state feedback output law that corresponds to what we desire, the LQR method has been used.
 The goal of the Linear Quadratic Regulator (LQR) is to minimize the quadratic cost function:
 
 \[
 J = \sum_{k=0}^\infty \left( x[k]^\top Q x[k] + u[k]^\top R u[k] \right).
 \]
 
-The weighting square matrices \( Q \) and \( R \) must be selected based on system requirements:
+Where the weighting square matrices \( Q \) and \( R \) must be selected based on system requirements:
 
 \begin{itemize}
-    \item \( Q \): Penalizes state deviations, typically represented as a diagonal matrix, e.g., \( Q = \text{diag}(q_1, q_2) \).
-    \item \( R \): Penalizes large control efforts, usually a positive scalar, \( R > 0 \).
+    \item \( Q \): Penalizes state deviations
+    \item \( R \): Penalizes large control efforts
 \end{itemize}
 
-For our design, $Q$ has been set to 1 because we don't care about state deviation. $R$ has been chosen such that the 
-controller will prioritize the use of motor 1 over motor 2. 
+Because we have a single state, $Q$ will have no impact. The interesting parameter to play with is the matrix $R$ as the
+value on its diagonal will determine the "\textit{cost}" of each input. The following choice has been made because, as 
+said in the introduction \ref{section:lqr introduction}, we want to use the second motor only when the first one cannot 
+produce enough torque:
 
 \[
 Q = 1, \quad
@@ -225,25 +224,11 @@ R = \begin{bmatrix}
 \end{bmatrix}.
 \]
 
-The optimal feedback gain matrix \( K \) is computed as:
-
-\[
-K = \left( R + B_{T_s}^\top P B_{T_s} \right)^{-1} \left(B_{T_s}^\top P A_{T_s} \right).
-\]
-
-Such that the controller state feedback will be:
-
-\[
-u[k] = -K \hat{x}[k] + r[k],
-\]
-
-where \( K \) is the gain matrix, $\hat{x}$ the estimated state from the observer and $r$ the reference to follow.
-
-The computation results yield:
+We then computed the feedback matrix using the matlab function \texttt{dlqr}:
 
 \[
 K = \begin{bmatrix}
-    0.9299 & 0\\
-    0 & 0.3938
+    -0.0368\\
+    -0.0065
 \end{bmatrix}
 \]
