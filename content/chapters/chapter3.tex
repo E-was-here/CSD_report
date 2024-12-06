@@ -232,3 +232,36 @@ K = \begin{bmatrix}
     -0.0065
 \end{bmatrix}
 \]
+
+Finally, the step response of the system with a state feedback has been measured (fig \ref{fig:state feedback step 
+response}). We can conclude from the data below that with a properly designed state feedback, the controller can mainly
+use the $1^{st}$ motor and only send an input to the second motor when the reference is hard to reach (e.g. the step).
+However this is far from satisfying us as there is  a steady state error. In the next section, we'll explain how to get 
+rid of it.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \textwidth]{Pictures/without_PI.png}
+    \caption{Step response with a state feedback}
+    \label{fig:state feedback step response}
+\end{figure}
+
+\subsection{state feedback with an integrator}
+
+To ensure a zero steady-state error, the closed loop system must contain a pole at the origin. This can be very easily 
+done by adding an integrator in front of the feedback. However, the matlab documentation gives a function specifically
+designed for an LQR state feedback with an integrator: \texttt{lqi}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \textwidth]{Pictures/lqi_docs.png}
+    \caption{LQI structure, from matlab documentation}
+    \label{fig:lqi documentation}
+\end{figure}
+
+This structure implies that $K$ becomes a $2x2$ matrix because its input is now the state $x$ and the output of the 
+integrator $x_i$. The integrator has been discretized using the Tustin equivalence and the new K has been computed using
+the same $Q$ and $R$ matrixes than before.
+
+
+
