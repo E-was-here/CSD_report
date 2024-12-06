@@ -8,6 +8,7 @@ is weaker than the first one: it can be seen easily as its time constant $\tau$ 
 meaning that it needs more time to reach a set value.
 
 \section{State Space Model}
+\label{section:ss representation}
 In control system design, it is often easier to define a parameterized state-space model in continuous time because 
 physical laws are typically described using differential equations. The linear state-space representation in 
 continuous-time has the following form:
@@ -37,9 +38,10 @@ The transfer function \ref{eq:1_st_order_TF} can be put in the temporal domain:
 \end{gather}
 
 This can be done for both motors with respectively ($u_1/y_1$) and ($u_2/y_2$) as input and output. With the choice of 
-state $x_i(t) = y_i(t)$, the state space representation becomes
+state $x_i(t) = y_i(t)$ representing the contribution of each motor to the total velocity, the state space 
+representation becomes:
 
-\begin{equation}
+\begin{equation*}
     \dot{\mathbf{x}}(t) = \begin{bmatrix}
     \frac{-1}{\tau_1} & 0 \\ 
     0 & \frac{-1}{\tau_2}
@@ -47,36 +49,50 @@ state $x_i(t) = y_i(t)$, the state space representation becomes
     \frac{A_{01}}{\tau_1} & 0\\ 
     0 & \frac{A_{02}}{\tau_2} 
     \end{bmatrix}\mathbf{u}(t)
+\end{equation*}
+
+\begin{equation}
+    y(t) = \begin{bmatrix} 1 & 1 \end{bmatrix}\mathbf{x}(t)
+\end{equation}
+
+where \( y \) is the velocity output, which is just the sum of both imposed speeds ($y = y_1 + y_2$). It is however 
+known that the states are not really independent so this state space representation is not accurate.the following 
+simplified model will be used from now where the state is a single value, namely the velocity of the shaft.
+
+\begin{equation}
+    \dot{\mathbf{x}}(t) = \begin{bmatrix}-\frac{\tau_1+\tau_2}{2 \tau_1 \tau_2}\end{bmatrix} \mathbf{x}(t) + 
+    \begin{bmatrix} 
+     \frac{A_{01}}{\tau_1} & \frac{A_{02}}{\tau_2} 
+    \end{bmatrix}\mathbf{u}(t)
     \label{eq:state_space_model_cx}
 \end{equation}
 
 \begin{equation}
-    y(t) = \begin{bmatrix} 1 & 1 \end{bmatrix}\mathbf{x}(t)
+    y(t) = \mathbf{x}(t)
     \label{eq:state_space_model_cy}
 \end{equation}
 
-where \( y \) is the velocity output, which is just the sum of both imposed speeds ($y = y_1 + y_2$).
-
 \section{Discrete-Time State-Space Model}
-We convert the continuous-time state-space model \eqref{eq:state_space_model_cx} and \eqref{eq:state_space_model_cy} to 
-a discrete-time state-space model using the parameters from the identification section (\ref{section:identification}):
+We need to convert the continuous-time state-space model \eqref{eq:state_space_model_cx} and 
+\eqref{eq:state_space_model_cy} to a discrete-time state-space model to design the controller in discrete time. This is
+the other approach compared to the one used in section \ref{section:PID controller} as we were there building the 
+controller in continuous time and then we discretized it. Using the parameters from the identification 
+section (\ref{section:identification}):
 
 \[
-\tau_1 = 1.915, \quad \tau_2 = 1.7, \quad A_{01} = 24.88, \quad A_{02} = 19.51.
+\tau_1 = 1.915, \quad \tau_2 = 1.7, \quad A_{01} = 24.88, \quad A_{02} = 19.51
 \]
 
-The continuous-time matrices are computed as:
+The continuous-time matrices are computed:
 
 \[
 \mathbf{A} = 
 \begin{bmatrix}
--0.5218 & 0 \\
-0 & -0.5882
+-0.5552
 \end{bmatrix}, \quad 
 \mathbf{B} = 
 \begin{bmatrix}
-12.9870 & 0\\
-0 & 11.4765
+12.9870 & 11.4765
 \end{bmatrix}.
 \]
 
@@ -85,23 +101,10 @@ For a sampling time \( T_s = 0.005 \, \text{seconds} \), the discrete-time matri
 \begin{itemize}
     \item \textbf{Discrete-Time State Matrix} (\(A_{T_s}\)): 
    Using the matrix exponential formula:
-   \[
-   A_{T_s} = e^{A T_s},
-   \]
-   where:
-   \[
-   A T_s = 
-   \begin{bmatrix}
-   -0.002609 & 0 \\
-   0 & -0.002941
-   \end{bmatrix}.
-   \]
-   Since \( A T_s \) is a diagonal matrix, the matrix exponential is computed as:
-
    \begin{gather*}
-        e^{A T_s} = \begin{bmatrix} e^{-0.002609} & 0 \\ 0 & e^{-0.002941} \end{bmatrix}\\
-        A_{T_s} = \begin{bmatrix} 0.9974 & 0 \\ 0 & 0.9971 \end{bmatrix}
+        A_{T_s} = e^{A T_s} = \begin{bmatrix} 1.0028 \end{bmatrix}    
    \end{gather*}
+   
 
 \end{itemize}
 
@@ -109,38 +112,31 @@ For a sampling time \( T_s = 0.005 \, \text{seconds} \), the discrete-time matri
 \begin{itemize} 
     \item \textbf{Discrete-Time Input Matrix} (\(B_{T_s}\)): 
    Using the formula:
-   \[
-   B_{T_s} = \int_0^{T_s} e^{A \zeta} B \, d\zeta,
-   \]
-   and solving numerically, we find:
-   \[
-   B_{T_s} = 
-   \begin{bmatrix}
-    0.0647 & 0\\
-    0 & 0.0570
-   \end{bmatrix}.
-   \]
+   \begin{gather*}
+    B_{T_s} = \int_0^{T_s} e^{A \zeta} B \, d\zeta = \begin{bmatrix} 0.0648 & 0.0573\end{bmatrix}    
+   \end{gather*}
+   
 \end{itemize}
 
 Thus, the discrete-time state-space representation of the system is:
 
 \begin{gather*}
-    x[k+1] = 
-        \begin{bmatrix} 0.9974 & 0 \\ 0 & 0.9971 \end{bmatrix} x[k] 
-    + \begin{bmatrix} 0.0647 & 0\\ 0 & 0.0570 \end{bmatrix} u[k]\\
-    y[k] = \begin{bmatrix} 1 & 1 \end{bmatrix} x[k]
+    \mathbf{x}[k+1] = 
+        \begin{bmatrix} 1.0028 \end{bmatrix} \mathbf{x}[k] 
+    + \begin{bmatrix} 0.0648 & 0.0573 \end{bmatrix} \mathbf{u}[k]\\
+    \mathbf{y}[k] = \mathbf{x}[k]
 \end{gather*}
-
 
 
 Finally, the sampled system is equivalent to a discrete-time system with these matrices. We will now use this representation to design an LQR controller for the given discrete-time system.
 
 \section{Controller design}
 
-To build a state feedback regulator, two steps must be completed. First, an observer has to be built to derive the state of 
-the system from the input and the output of it. Then, the state feedback control law must be determined.\\
-The design of those two parts (observer and state feedback) can be done independently thanks to the separation 
-principle. The structure of the whole controller will be:
+\subsection{Simple state feedback}
+
+In the case of this system and because the model has been simplified to a single state representation in section
+\ref{section:ss representation}, there is no need to build an observer as the state is the velocity measured by the 
+speed sensor. This gives rise to a really simple block diagram:
 
 \begin{figure}[H]
     \centering
@@ -149,6 +145,11 @@ principle. The structure of the whole controller will be:
     \label{fig:lqr structure}
 \end{figure}
 
+The determination of the value for $K$
+
+% observer derivation, left in comment with respect to the time spent writing the subsection :')
+
+\iffalse
 \subsection{Observer}
 
 The observer will consist of a copy of the system and a feedback as shown in fig \ref{fig:observer structure}. In this
@@ -195,7 +196,7 @@ An easy choice is $l_1 = -0.9974$ and $l_2 = -1$ to make $A_{T_s} + LC$ diagonal
         -0.9974 \\ -1
     \end{bmatrix}
 \end{equation}
-
+\fi
 
 \subsection{LQR Feedback Law}
 
