@@ -261,7 +261,100 @@ designed for an LQR state feedback with an integrator: \texttt{lqi}.
 
 This structure implies that $K$ becomes a $2x2$ matrix because its input is now the state $x$ and the output of the 
 integrator $x_i$. The integrator has been discretized using the Tustin equivalence and the new K has been computed using
-the same $Q$ and $R$ matrixes than before.
+the same $R$ matrix than before. After trying with $Q = 1$, it has been increased to reduce the settling time which gave
+the second graph.
 
+\begin{figure}[H]
+    \centering
+    % Left Image
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Pictures/Q_1.png}
+        \caption{Step response of the LQI with $Q = 1$}
+        \label{fig:step_response_Q1}
+    \end{subfigure}%
+    % Right Image
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Pictures/Q_500.png}
+        \caption{Step response of the LQI with $Q = 500$}
+        \label{fig:step_response_Q500}
+    \end{subfigure}
+    \caption{Comparison of step responses for different $Q$ values}
+    \label{fig:step_responses}
+\end{figure}
+
+Increasing $Q$ indeed helped to make the system reach the reference faster but it comes with an increase in the command
+swing. A way to make it a better was to express $Q$ as a $2x2$ matrix. Let's recall from the previous section that $Q$
+penalizes state deviation and because of the integrator, the state has become $\begin{bmatrix}y(t) & x_i(t)\end{bmatrix}
+^T$ which means that only the integrator state (which controls the settling time) could be increased.
+
+\begin{equation*}
+    Q = \begin{bmatrix}
+        \frac{1}{100} & 0\\
+        0 & 100
+    \end{bmatrix}
+\end{equation*}
+
+Allowed indeed a settling time close to the one of $Q = 500$ shown above (\ref{fig:step_response_Q1}) with
+less input fluctuations. The best way found was in fact to let $Q = 1$ and to give more impact to the integrator by
+adding a multiplier block $K_i$ at its output, giving the control scheme:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \textwidth]{Pictures/lqi_controller.png}
+    \caption{LQI adapted structure}
+    \label{fig:lqi modified}
+\end{figure}
+
+Here again, two experiments have been made. The one on the left is with a low $K_i$ ($= 50$) and $R = 
+\begin{bmatrix}1&0\\0&10\end{bmatrix}$ where the second test was conducted with $K_i = 500$ and $R$ has been set to
+$\begin{bmatrix}1&0\\0&20\end{bmatrix}$.
+
+\begin{figure}[H]
+    \centering
+    % Left Image
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Pictures/McGiver1.png}
+        \caption{Step response of the LQI with low $K_i$}
+    \end{subfigure}%
+    % Right Image
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Pictures/McGiver2.png}
+        \caption{Step response of the LQI with high $K_i$}
+    \end{subfigure}
+    \caption{Comparison of step responses for different $K_i$ values}
+\end{figure}
+
+The second one satisfying the settling time requirement, it has been chosen as the final LQI controller. A closer look
+at the step (done in figure \ref{fig:lqi zoom}) shows that the second motor is indeed used when the $1^{st}$ motor is
+not able to provide enough torque by itself (when a step reference is applied).\\
+Due to the limited time we had in the lab, we were not able to conduct a disturbance test on this controller but as it
+contains an integrator, it is (\textit{at least theoretically}) able to reject a step disturbance. The same thing applies
+for the frequency response where the limited time only allowed us to manually measure the amplitude and the phase of the
+closed loop at $4 Hz$ thanks to figure \ref{fig:lqi 4Hz}.
+
+\begin{gather*}
+    \text{Amplitude}\Big|_{f = 4 Hz} \simeq \frac{2.858}{4.99} = -4.84 dB\\
+    \text{Phase}\Big|_{f = 4 Hz} \simeq \frac{0.315 - 0.355}{0.25} = -57.6^{\circ}
+\end{gather*}
+
+So we are definitely not achieving the $4^{th}$ requirement which was to perfectly track a $4 Hz$ signal.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \textwidth]{Pictures/McGiver_zoom.png}
+    \caption{closer look to the step response of the final LQI controller}
+    \label{fig:lqi zoom}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = \textwidth]{Pictures/frequency_response.png}
+    \caption{Response of the final LQI controller to a $4 Hz$ sine reference}
+    \label{fig:lqi 4Hz}
+\end{figure}
 
 

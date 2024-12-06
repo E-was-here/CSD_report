@@ -10,7 +10,7 @@
 \LoadClass[a4paper,11pt]{report}
 
 %%%%Structure%%%%
-
+\usepackage{subcaption} % Add this to your preamble
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
 %Language
