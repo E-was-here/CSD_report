@@ -189,6 +189,34 @@ This controller has then been tested to check the four requirements:
 
 \begin{itemize}
     \item \textbf{Settling time:} with the biggest reference step that could be imposed to the
-    system, the settling time is 
+    system, the settling time is $165 ms$ as shown on fig \ref{fig:step reference for both}. 
+    This time is greater than the $135 ms$ measured with only the $1^{st}$ motor as the step was 
+    twice smaller there.
+    \item \textbf{Reference tracking:} the output velocity perfectly follows the reference when it
+    is at $4 Hz$ (see figure \ref{fig:sin reference for both}). The bandwidth of the controller is
+    $689 Hz$ (the Bode plot of this controller has been removed to save space).
+    \item \textbf{Disturbance rejection:} the analysys of figure 
+    \ref{fig:step disturbance for both} shows that the disturbation is fully rejected after $3.3 s$.
+    Even though this time is quite consequent, the velocity doesn't deviate more than $6.5 \%$
+    compared to the reference.
+    \item \textbf{Speed smoothness: } the tree of the following figures have an output that is smooth.
 \end{itemize}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/stepRef_both.png}
+    \caption{response of the PI controller with both motors for a step reference $[5.5; -5.5] V$}
+    \label{fig:step reference for both}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/sinRef_both.png}
+    \caption{response of the PI controller with both motors for a sine reference at $4 Hz$}
+    \label{fig:sin reference for both}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/disturbance_rejection.png}
+    \caption{response of the PI controller with both motors for a step disturbance}
+    \label{fig:step disturbance for both}
+\end{figure}
