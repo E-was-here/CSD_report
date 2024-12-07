@@ -118,16 +118,77 @@ To keep a gain margin of at least $6 dB$, we can multiply $k_p$ (which was set t
 . This means that if the loop is closed with $k_p = 24$, the closed loop system will be stable and it's bandwidth can
 be determined. This is done by taking the frequency at which the gain of the closed loop system falls under $-3 dB$.\\ 
 Figure \ref{fig:CL bode} gives a bandwidth of around $709 \text{rad}/s$.  This proves that a simple PI controller is 
-sufficient to perfectly track a signal at $4 Hz$ with a single motor.
+sufficient to perfectly track a signal at $4 Hz$ with a single motor.\\
+Finally, the simulink model of the controller is shown on figure \ref{fig:simulink single PI}.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics[width=\textwidth]{Pictures/bode_CL.png}
     \caption{Bode diagram of the closed loop system for $k_p = 24$ - motor 1}
     \label{fig:CL bode}
 \end{figure}
 
-The same 
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/single_PI_simulink.png}
+    \caption{Simulink model of the PI controller - motor 1}
+    \label{fig:simulink single PI}
+\end{figure}
 
 
+The same method has been used to design a PI controller for the second motor too.
+
+\section{PI controller result}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/stepRef_motor1.png}
+    \caption{closed loop output with a PI controller for a step reference $[0; 5] V$ - motor 1}
+    \label{fig:step reference motor 1}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/stepRef_motor2.png}
+    \caption{closed loop output with a PI controller for a step reference $[0; 5] V$ - motor 2}
+    \label{fig:step reference motor 2}
+\end{figure}
+
+By analysing the response of each controller to a step reference (figures \ref{fig:step reference motor 1} and 
+\ref{fig:step reference motor 2}), we can see that both have
+a settling time smaller than $0.5 s$ (respectively $0.135 s$ and $0.23 s$). An observation
+that will be interesting for the chapter \ref{section:lqr} is that the second motor is 
+weaker than the first one. It indeed takes $115 ms$ for it to reach the reference instead of
+the $45 ms$ it takes for motor 1. \\
+The regulated system is also able to follow a sinusoïdal reference at $4 Hz$ as expected with
+the $k_p$ chosen in section \ref{section:freq_analysis} as proved on figure 
+\ref{fig:sin reference motor 1} for the first motor:
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/sinRef_motor1.png}
+    \caption{closed loop output with a PI controller for a sine reference ($4 Hz$) - motor 1}
+    \label{fig:sin reference motor 1}
+\end{figure}
+
+\section{Combination of the two motors}
+
+The idea now is to use both controller designed from now to once again reduce the settling 
+time. It is worth noting that putting both motors in parallel destabilized the system so a 
+gain block ($k_p = 0.45$) was added to make the open loop phase margin greater than $6 dB$ (methodology of
+section \ref{section:freq_analysis}), leading to the control scheme:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Pictures/simulink_whole_controller.png}
+    \caption{structure of the PI controller with both motors}
+    \label{fig:structure whole PI}
+\end{figure}
+
+This controller has then been tested to check the four requirements:
+
+\begin{itemize}
+    \item \textbf{Settling time:} with the biggest reference step that could be imposed to the
+    system, the settling time is 
+\end{itemize}
 
