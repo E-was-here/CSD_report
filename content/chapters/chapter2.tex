@@ -28,7 +28,7 @@ The method used here is to design the controller in the Laplace domain in the fi
 controller has the desired behaviour, it is discretized using the Tustin method (without forgetting to take the
 ZOH into account).
 
-\section{Disturbance rejection}
+\section{Disturbance rejection and pole cancellation}
 
 From theory, it is known that a controller is able to asymptotically reject a disturbance if it has at the denominator
 of its transfer function the denominator of the disturbance.\\
@@ -98,7 +98,7 @@ has to be defined. In continuous time, it looks like:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=\textheight/7]{Pictures/controller_structure.png}
+    \includegraphics[width=\textwidth]{Pictures/controller_structure.png}
     \caption{Structure of the closed loop system with a PI regulator}
     \label{fig:CL structure}
 \end{figure}
@@ -109,22 +109,25 @@ To determine the gain (= $k_p$) that can be put in the system, the \texttt{margi
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=\textheight/3]{Pictures/bode_OL.png}
-    \caption{Bode diagram of the open loop system with the stability margins}
+    \includegraphics[width=\textwidth]{Pictures/bode_OL.png}
+    \caption{Bode diagram of the open loop system with the stability margins - motor 1}
     \label{fig:OL bode}
 \end{figure}
 
 To keep a gain margin of at least $6 dB$, we can multiply $k_p$ (which was set to 1) by $27.7 dB = 10^{27.7/20} = 24.26$
 . This means that if the loop is closed with $k_p = 24$, the closed loop system will be stable and it's bandwidth can
 be determined. This is done by taking the frequency at which the gain of the closed loop system falls under $-3 dB$.\\ 
-Figure \ref{fig:CL bode} gives a bandwidth of around $709 \text{rad}/s$. However to be more realistic and also to stay 
-with a small phase (as it reaches $-200 ^{\circ}$ when the magnitude is $-3 dB$), the "\textit{safe}" bandwidth is $111 
-\text{rad}/s$. This proves that a simple PI controller is sufficient to perfectly track a signal at $4 Hz$.
+Figure \ref{fig:CL bode} gives a bandwidth of around $709 \text{rad}/s$.  This proves that a simple PI controller is 
+sufficient to perfectly track a signal at $4 Hz$ with a single motor.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[height=\textheight/3]{Pictures/bode_CL.png}
-    \caption{Bode diagram of the closed loop system for $k_p = 24$}
+    \includegraphics[width=\textwidth]{Pictures/bode_CL.png}
+    \caption{Bode diagram of the closed loop system for $k_p = 24$ - motor 1}
     \label{fig:CL bode}
 \end{figure}
+
+The same 
+
+
 
