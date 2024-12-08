@@ -4,33 +4,19 @@
 \section{Introduction}
 \label{section:lqr introduction}
 
-After validating the PID controller, the TA asked if it would be possible to design another controller able to only use
-the second motor when the first one struggles to reach the desired speed. This desire suits to the system as the motor 2
-is weaker than the first one: it can be seen easily as its time constant $\tau$ is greater than the one of motor 1, 
-meaning that it needs more time to reach a set value.
+After validating the PID controller, the TA asked if it would be possible to only use the second motor when the first one struggles to reach the desired speed. This desire suits to the system as the motor 2 is weaker than the first one (proved in section \ref{section:PI controller result}). To fulfill this desiderata, a state feedback controller will be designed, meaning that the state-space representation of the system will be needed.
 
-\section{State Space Model}
+\section{State-space Model}
 \label{section:ss representation}
-In control system design, it is often easier to define a parameterized state-space model in continuous time because 
-physical laws are typically described using differential equations. The linear state-space representation in 
-continuous-time has the following form:
 
-\begin{equation}
-    \dot{\mathbf{x}} = A \mathbf{x} + B \mathbf{u}
-    \label{eq:state_space_models}
-\end{equation}
-
-where \( \mathbf{x} \) is the state vector, \( A \) is the state matrix that represents the system dynamics, 
-\( B \) is the input matrix that represents the control input, and \( \mathbf{u} \) is the input vector.\\
-To get to the state space representation from the transfer function is quite easy as each motor is a $1^{st}$ order
-system. By using the following property of the Laplace transform:
+The state-space will be derived from the continuous time transfer function and then discretized. This way, we can make use of the following property of the Laplace transform:
 
 \begin{align}
     X(s) &= \mathcal{L}\left\{x(t)\right\}\\
     s X(s) &= \mathcal{L}\left\{\frac{d x(t)}{dt}\right\}
 \end{align}
 
-The transfer function \ref{eq:1_st_order_TF} can be put in the temporal domain:
+The transfer function \ref{eq:2nd_to_1st_order_TF} can be put in the temporal domain:
 
 \begin{gather}
     G(s) = \frac{Y(s)}{U(s)} = \frac{A_0}{\tau s + 1}\\
@@ -40,7 +26,7 @@ The transfer function \ref{eq:1_st_order_TF} can be put in the temporal domain:
 \end{gather}
 
 This can be done for both motors with respectively ($u_1/y_1$) and ($u_2/y_2$) as input and output. With the choice of 
-state $x_i(t) = y_i(t)$ representing the contribution of each motor to the total velocity, the state space 
+state $x_i(t) = y_i(t)$ representing the contribution of each motor to the total velocity, the state-space 
 representation becomes:
 
 \begin{equation*}
@@ -58,7 +44,7 @@ representation becomes:
 \end{equation}
 
 where \( y \) is the velocity output, which is just the sum of both imposed speeds ($y = y_1 + y_2$). It is however 
-known that the states are not really independent so this state space representation is not accurate.the following 
+known that the states are not really independent so this state-space representation is not accurate. The following 
 simplified model will be used from now where the state is a single value, namely the velocity of the shaft.
 
 \begin{equation}
@@ -77,7 +63,7 @@ simplified model will be used from now where the state is a single value, namely
 \section{Discrete-Time State-Space Model}
 We need to convert the continuous-time state-space model \eqref{eq:state_space_model_cx} and 
 \eqref{eq:state_space_model_cy} to a discrete-time state-space model to design the controller in discrete time. This is
-the other approach compared to the one used in section \ref{section:PID controller} as we were there building the 
+another approach compared to the one used in section \ref{section:PID controller} as we were there building the 
 controller in continuous time and then we discretized it. Using the parameters from the identification 
 section (\ref{section:identification}):
 
@@ -98,7 +84,7 @@ The continuous-time matrices are computed:
 \end{bmatrix}.
 \]
 
-For a sampling time \( T_s = 0.005 \, \text{seconds} \), the discrete-time matrices \( A_{T_s} \) and \( B_{T_s} \) are calculated as follows:
+For a sampling time $T_S = 5 ms$, the discrete-time matrices \( A_{T_s} \) and \( B_{T_s} \) are calculated as follows:
 
 \begin{itemize}
     \item \textbf{Discrete-Time State Matrix} (\(A_{T_s}\)): 
@@ -147,7 +133,6 @@ speed sensor. This gives rise to a really simple block diagram:
     \label{fig:lqr structure}
 \end{figure}
 
-The determination of the value for $K$ has been done using the LQR algorithm.
 % observer derivation, left in comment with respect to the time spent writing the subsection :')
 
 \iffalse
@@ -199,7 +184,8 @@ An easy choice is $l_1 = -0.9974$ and $l_2 = -1$ to make $A_{T_s} + LC$ diagonal
 \end{equation}
 \fi
 
-The goal of the Linear Quadratic Regulator (LQR) is to minimize the quadratic cost function:
+
+The determination of the value for $K$ has been done using the LQR algorithm. The goal of the Linear Quadratic Regulator (LQR) is to minimize the quadratic cost function:
 
 \[
 J = \sum_{k=0}^\infty \left( x[k]^\top Q x[k] + u[k]^\top R u[k] \right).
@@ -260,10 +246,7 @@ designed for an LQR state feedback with an integrator: \texttt{lqi}.
     \label{fig:lqi documentation}
 \end{figure}
 
-This structure implies that $K$ becomes a $2x2$ matrix because its input is now the state $x$ and the output of the 
-integrator $x_i$. The integrator has been discretized using the Tustin equivalence and the new K has been computed using
-the same $R$ matrix than before. After trying with $Q = 1$, it has been increased to reduce the settling time which gave
-the second graph.
+This structure implies that $K$ becomes a $2x2$ matrix because its input is now the state $x$ (equal to $y$) and the output of the integrator $x_i$. The integrator has been discretized using the Tustin method and the new K has been computed using the same $R$ matrix than before. After trying with $Q = 1$, it has been increased to reduce the settling time which gave the second graph.
 
 \begin{figure}[H]
     \centering
@@ -286,9 +269,7 @@ the second graph.
 \end{figure}
 
 Increasing $Q$ indeed helped to make the system reach the reference faster but it comes with an increase in the command
-swing. A way to make it a better was to express $Q$ as a $2x2$ matrix. Let's recall from the previous section that $Q$
-penalizes state deviation and because of the integrator, the state has become $\begin{bmatrix}y(t) & x_i(t)\end{bmatrix}
-^T$ which means that only the integrator state (which controls the settling time) could be increased.
+swing. A way to make it a bit better was to express $Q$ as a $2x2$ matrix. Let's recall from the previous section that $Q$ penalizes state deviation and because of the integrator, the state has become $\begin{bmatrix}y(t) & x_i(t)\end{bmatrix}^T$ which means that only the integrator state (which controls the settling time) could be increased.
 
 \begin{equation*}
     Q = \begin{bmatrix}
@@ -298,7 +279,7 @@ penalizes state deviation and because of the integrator, the state has become $\
 \end{equation*}
 
 Allowed indeed a settling time close to the one of $Q = 500$ shown above (\ref{fig:step_response_Q1}) with
-less input fluctuations. The best way found was in fact to let $Q = 1$ and to give more impact to the integrator by
+less input fluctuations. The best way found was in fact to let $Q = 1$ and to \textit{manually} give more impact to the integrator by
 adding a multiplier block $K_i$ at its output, giving the control scheme:
 
 \begin{figure}[H]
@@ -330,7 +311,7 @@ $\begin{bmatrix}1&0\\0&20\end{bmatrix}$.
 \end{figure}
 
 The second one satisfying the settling time requirement, it has been chosen as the final LQI controller. A closer look
-at the step (done in figure \ref{fig:lqi zoom}) shows that the second motor is indeed used when the $1^{st}$ motor is
+at the step (shown in figure \ref{fig:lqi zoom}) shows that the second motor is indeed used when the $1^{st}$ motor is
 not able to provide enough torque by itself (when a step reference is applied).\\
 Due to the limited time we had in the lab, we were not able to conduct a disturbance test on this controller but as it
 contains an integrator, it is (\textit{at least theoretically}) able to reject a step disturbance. The same thing applies
@@ -342,7 +323,7 @@ closed loop at $4 Hz$ thanks to figure \ref{fig:lqi 4Hz}.
     \text{Phase}\Big|_{f = 4 Hz} \simeq \frac{0.315 - 0.355}{0.25} = -57.6^{\circ}
 \end{gather*}
 
-So we are definitely not achieving the $4^{th}$ requirement which was to perfectly track a $4 Hz$ signal.
+So we are definitely \textbf{not} achieving the $4^{th}$ requirement which was to perfectly track a $4 Hz$ signal.
 
 \begin{figure}[H]
     \centering
